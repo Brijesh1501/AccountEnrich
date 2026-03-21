@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/accountiq-crm-v5-edgefn.html" }
+  ]
+}

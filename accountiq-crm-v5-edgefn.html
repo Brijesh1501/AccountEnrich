@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AccountIQ — AI Enrichment CRM</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzRmOGVmNyIvPgogIDx0ZXh0IHg9IjE2IiB5PSIxNyIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9Ii0wLjUiPklRPC90ZXh0Pgo8L3N2Zz4="/>
+<link rel="shortcut icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzRmOGVmNyIvPgogIDx0ZXh0IHg9IjE2IiB5PSIxNyIgZm9udC1mYW1pbHk9InN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9Ii0wLjUiPklRPC90ZXh0Pgo8L3N2Zz4="/>
+
+<!-- PWA / Home Screen -->
+<meta name="application-name" content="AccountIQ"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="AccountIQ"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNWI5ZWY3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzJkNmJlNCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9InVybCgjYmcpIi8+CiAgPHRleHQgeD0iMjU2IiB5PSIxOTUiIGZvbnQtZmFtaWx5PSJETSBTYW5zLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2MCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSItNCI+SVE8L3RleHQ+CiAgPHJlY3QgeD0iMTIwIiB5PSIzMTgiIHdpZHRoPSIyNzIiIGhlaWdodD0iMTQiIHJ4PSI3IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMzUpIi8+CiAgPHRleHQgeD0iMjU2IiB5PSIzNzgiIGZvbnQtZmFtaWx5PSJETSBTYW5zLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjUyIiBmb250LXdlaWdodD0iNTAwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNzUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iNiI+QUkgQ1JNPC90ZXh0Pgo8L3N2Zz4="/>
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIkFjY291bnRJUSBcdTIwMTQgQUkgRW5yaWNobWVudCBDUk0iLCAic2hvcnRfbmFtZSI6ICJBY2NvdW50SVEiLCAiZGVzY3JpcHRpb24iOiAiQUktcG93ZXJlZCBCMkIgYWNjb3VudCBlbnJpY2htZW50IENSTSIsICJzdGFydF91cmwiOiAiLi8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzA4MDkwYyIsICJ0aGVtZV9jb2xvciI6ICIjNGY4ZWY3IiwgIm9yaWVudGF0aW9uIjogImFueSIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWo0S0lDQThaR1ZtY3o0S0lDQWdJRHhzYVc1bFlYSkhjbUZrYVdWdWRDQnBaRDBpWW1jaUlIZ3hQU0l3SlNJZ2VURTlJakFsSWlCNE1qMGlNVEF3SlNJZ2VUSTlJakV3TUNVaVBnb2dJQ0FnSUNBOGMzUnZjQ0J2Wm1aelpYUTlJakFsSWlCemRHOXdMV052Ykc5eVBTSWpOV0k1WldZM0lpOCtDaUFnSUNBZ0lEeHpkRzl3SUc5bVpuTmxkRDBpTVRBd0pTSWdjM1J2Y0MxamIyeHZjajBpSXpKa05tSmxOQ0l2UGdvZ0lDQWdQQzlzYVc1bFlYSkhjbUZrYVdWdWRENEtJQ0E4TDJSbFpuTStDaUFnUEhKbFkzUWdkMmxrZEdnOUlqVXhNaUlnYUdWcFoyaDBQU0kxTVRJaUlISjRQU0l4TVRBaUlHWnBiR3c5SW5WeWJDZ2pZbWNwSWk4K0NpQWdQSFJsZUhRZ2VEMGlNalUySWlCNVBTSXhPVFVpSUdadmJuUXRabUZ0YVd4NVBTSkVUU0JUWVc1ekxITjVjM1JsYlMxMWFTeHpZVzV6TFhObGNtbG1JaUJtYjI1MExYTnBlbVU5SWpFMk1DSWdabTl1ZEMxM1pXbG5hSFE5SWpjd01DSWdabWxzYkQwaWQyaHBkR1VpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHUnZiV2x1WVc1MExXSmhjMlZzYVc1bFBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJdE5DSStTVkU4TDNSbGVIUStDaUFnUEhKbFkzUWdlRDBpTVRJd0lpQjVQU0l6TVRnaUlIZHBaSFJvUFNJeU56SWlJR2hsYVdkb2REMGlNVFFpSUhKNFBTSTNJaUJtYVd4c1BTSnlaMkpoS0RJMU5Td3lOVFVzTWpVMUxEQXVNelVwSWk4K0NpQWdQSFJsZUhRZ2VEMGlNalUySWlCNVBTSXpOemdpSUdadmJuUXRabUZ0YVd4NVBTSkVUU0JUWVc1ekxITjVjM1JsYlMxMWFTeHpZVzV6TFhObGNtbG1JaUJtYjI1MExYTnBlbVU5SWpVeUlpQm1iMjUwTFhkbGFXZG9kRDBpTlRBd0lpQm1hV3hzUFNKeVoySmhLREkxTlN3eU5UVXNNalUxTERBdU56VXBJaUIwWlhoMExXRnVZMmh2Y2owaWJXbGtaR3hsSWlCa2IyMXBibUZ1ZEMxaVlYTmxiR2x1WlQwaWJXbGtaR3hsSWlCc1pYUjBaWEl0YzNCaFkybHVaejBpTmlJK1FVa2dRMUpOUEM5MFpYaDBQZ284TDNOMlp6ND0iLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifV19"/>
+
+<meta name="theme-color" content="#4f8ef7"/>
+<meta name="msapplication-TileColor" content="#4f8ef7"/>
+<meta property="og:title" content="AccountIQ — AI Enrichment CRM"/>
+<meta property="og:description" content="AI-powered B2B account enrichment. Enrich any company in seconds."/>
+<meta property="og:type" content="website"/>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#08090c;--surface:#0f1117;--surface2:#161920;--surface3:#1c2029;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);--border3:rgba(255,255,255,0.16);
+  --text:#eef0f6;--text2:#7e849e;--text3:#454b62;
+  --accent:#4f8ef7;--accent2:#2d6be4;--accent-glow:rgba(79,142,247,0.12);
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-border:rgba(34,197,94,0.2);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,0.09);--amber-border:rgba(245,158,11,0.2);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.09);--red-border:rgba(239,68,68,0.2);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.1);
+  --teal:#2dd4bf;--teal-bg:rgba(45,212,191,0.1);
+  --admin:#f97316;--admin-bg:rgba(249,115,22,0.1);--admin-border:rgba(249,115,22,0.2);
+  --r:9px;--rl:13px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
+
+/* ─── AUTH ─────────────────────────────────────────── */
+#authScreen{display:flex;min-height:100vh;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.auth-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.auth-glow-1{width:700px;height:700px;background:radial-gradient(circle,rgba(79,142,247,0.07) 0%,transparent 65%);top:-200px;right:-200px;}
+.auth-glow-2{width:500px;height:500px;background:radial-gradient(circle,rgba(45,212,191,0.04) 0%,transparent 65%);bottom:-150px;left:-150px;}
+.auth-wrap{display:flex;gap:0;max-width:860px;width:95vw;position:relative;z-index:1;}
+.auth-left{background:linear-gradient(135deg,#0f1a2e 0%,#0d1520 100%);border:1px solid var(--border2);border-right:none;border-radius:var(--rl) 0 0 var(--rl);padding:40px 36px;width:340px;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-between;}
+.auth-right{background:var(--surface);border:1px solid var(--border2);border-radius:0 var(--rl) var(--rl) 0;padding:36px 36px;flex:1;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:36px;}
+.brand-icon{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;}
+.brand-name{font-size:18px;font-weight:700;letter-spacing:-0.4px;}
+.brand-sub{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.auth-pitch{margin-bottom:auto;}
+.auth-pitch h2{font-size:20px;font-weight:600;line-height:1.3;margin-bottom:10px;letter-spacing:-0.3px;}
+.auth-pitch p{font-size:12px;color:var(--text2);line-height:1.7;}
+.auth-feature{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);margin-top:10px;}
+.auth-feature-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.auth-footer-note{font-size:10px;color:var(--text3);margin-top:32px;line-height:1.6;}
+.auth-tabs{display:flex;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:22px;}
+.auth-tab{flex:1;padding:7px;text-align:center;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);border:none;background:none;font-family:var(--font);transition:all 0.15s;}
+.auth-tab.active{background:var(--surface3);color:var(--text);}
+.fg{margin-bottom:14px;}
+.lbl{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:0.05em;}
+.inp{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 13px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color 0.15s;}
+.inp:focus{border-color:var(--accent);}
+.inp::placeholder{color:var(--text3);}
+.auth-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:background 0.15s;margin-top:2px;}
+.auth-btn:hover{background:var(--accent2);}
+.auth-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.auth-link{font-size:12px;color:var(--text3);cursor:pointer;text-align:center;margin-top:12px;display:block;}
+.auth-link:hover{color:var(--text2);}
+.auth-msg{border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:14px;line-height:1.5;}
+.auth-msg.err{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
+.auth-msg.ok{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.hint{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5;}
+.sec-note{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--amber);margin-top:14px;line-height:1.6;}
+
+/* ─── MAIN APP ──────────────────────────────────────── */
+#appScreen{display:none;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;height:100vh;z-index:100;}
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.sb-logo{padding:18px 14px 14px;border-bottom:1px solid var(--border);}
+.sb-brand{display:flex;align-items:center;gap:9px;}
+.sb-icon{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.sb-name{font-size:14px;font-weight:600;letter-spacing:-0.3px;}
+.sb-sub{font-size:9px;color:var(--text3);font-family:var(--mono);}
+.sb-nav{padding:10px 8px;flex:1;overflow-y:auto;}
+.nav-sec{font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--text3);padding:12px 8px 5px;text-transform:uppercase;}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all 0.12s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:var(--font);}
+.ni:hover{background:var(--surface2);color:var(--text);}
+.ni.active{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(79,142,247,0.18);}
+.ni.admin-ni{color:var(--text2);}
+.ni.admin-ni.active{background:var(--admin-bg);color:var(--admin);border:1px solid var(--admin-border);}
+.nb{margin-left:auto;font-size:9px;background:var(--accent);color:#fff;padding:1px 6px;border-radius:9px;font-weight:700;}
+.nb.red{background:var(--red);}
+.sb-user{padding:10px 10px;border-top:1px solid var(--border);}
+.uc{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.ua{width:28px;height:28px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(79,142,247,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;}
+.ua.admin-ua{background:var(--admin-bg);border-color:var(--admin-border);color:var(--admin);}
+.ui{flex:1;overflow:hidden;}
+.ue{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ur{font-size:10px;color:var(--text3);}
+.cfg-btn{width:100%;display:flex;align-items:center;gap:7px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:7px;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);margin-bottom:5px;transition:all 0.12s;}
+.cfg-btn:hover{color:var(--text);}
+.lo-btn{width:100%;display:flex;align-items:center;gap:7px;padding:7px 10px;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--font);transition:all 0.12s;}
+.lo-btn:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border);}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.pt{font-size:14px;font-weight:600;}
+.ps{font-size:12px;color:var(--text3);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.12s;font-family:var(--font);}
+.btn-p{background:var(--accent);color:#fff;}.btn-p:hover{background:var(--accent2);}
+.btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border2);}.btn-s:hover{background:var(--surface3);}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border);}.btn-g:hover{background:var(--surface2);color:var(--text);}
+.btn-d{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.btn-a{background:var(--admin-bg);color:var(--admin);border:1px solid var(--admin-border);}
+.btn-sm{padding:4px 9px;font-size:11px;}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.pc{padding:22px;flex:1;}
+.pg{display:none;}.pg.active{display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;}
+.sl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+.sv{font-size:22px;font-weight:600;letter-spacing:-0.5px;}
+.ss{font-size:11px;color:var(--text3);margin-top:2px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;margin-bottom:18px;}
+.card h3{font-size:13px;font-weight:600;margin-bottom:12px;}
+.er{display:flex;gap:9px;margin-bottom:9px;}
+.ipt{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;}
+.ipt:focus{border-color:var(--accent);}
+.ipt::placeholder{color:var(--text3);}
+textarea.ipt{resize:vertical;min-height:85px;line-height:1.5;}
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;}
+.th{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;}
+.thl{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.sw{position:relative;}
+.sw::before{content:'⌕';position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;}
+.si{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:5px 10px 5px 27px;color:var(--text);font-size:12px;font-family:var(--font);outline:none;width:200px;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--surface2);}
+th{padding:9px 13px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;border-bottom:1px solid var(--border);}
+td{padding:10px 13px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.015);}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;}
+.b-blue{background:rgba(79,142,247,0.14);color:#7db4fb;}
+.b-green{background:var(--green-bg);color:var(--green);}
+.b-amber{background:var(--amber-bg);color:var(--amber);}
+.b-red{background:var(--red-bg);color:var(--red);}
+.b-purple{background:var(--purple-bg);color:var(--purple);}
+.b-teal{background:var(--teal-bg);color:var(--teal);}
+.b-gray{background:rgba(255,255,255,0.06);color:var(--text2);}
+.b-admin{background:var(--admin-bg);color:var(--admin);}
+.pbw{background:var(--surface2);border-radius:4px;height:5px;overflow:hidden;margin-top:7px;}
+.pb{height:100%;background:var(--accent);border-radius:4px;transition:width 0.3s;}
+.jr{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
+.jr:last-child{border-bottom:none;}
+.js{font-size:12px;font-family:var(--mono);color:var(--text);flex:1;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.md{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rl);padding:22px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.md h2{font-size:15px;font-weight:600;margin-bottom:5px;}
+.md-sub{font-size:12px;color:var(--text2);margin-bottom:18px;}
+.mf{display:flex;gap:7px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);}
+.uz{border:2px dashed var(--border2);border-radius:var(--rl);padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.18s;}
+.uz:hover,.uz.drag{border-color:var(--accent);background:var(--accent-glow);}
+.es{padding:50px 20px;text-align:center;color:var(--text2);}
+.ei{font-size:30px;margin-bottom:10px;opacity:0.35;}
+.et{font-size:13px;font-weight:500;margin-bottom:3px;}
+.esb{font-size:11px;color:var(--text3);}
+.dr{position:fixed;right:0;top:0;height:100vh;width:440px;background:var(--surface);border-left:1px solid var(--border2);z-index:150;transform:translateX(100%);transition:transform 0.22s ease;overflow-y:auto;}
+.dr.open{transform:translateX(0);}
+.drh{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);}
+.drb{padding:18px;}
+.drow{display:flex;padding:9px 0;border-bottom:1px solid var(--border);}
+.dk{width:130px;font-size:11px;font-weight:600;color:var(--text3);flex-shrink:0;}
+.dv{font-size:12px;color:var(--text);word-break:break-all;}
+.dsec{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin:14px 0 7px;}
+.di{height:1px;background:var(--border);margin:18px 0;}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;}
+.dot-g{background:var(--green);}
+.dot-r{background:var(--red);}
+.dot-gr{background:var(--text3);}
+.spin{animation:spin 0.8s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ts{max-height:480px;overflow-y:auto;}
+select.ipt option{background:var(--surface2);}
+input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:pointer;}
+.tc{position:fixed;bottom:18px;right:18px;z-index:500;display:flex;flex-direction:column;gap:7px;}
+.toast{background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:11px 14px;font-size:12px;display:flex;align-items:center;gap:9px;animation:si 0.18s ease;min-width:240px;box-shadow:0 8px 28px rgba(0,0,0,0.45);}
+.toast.success{border-color:var(--green-border);}
+.toast.error{border-color:var(--red-border);}
+@keyframes si{from{transform:translateX(18px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* ─── ADMIN ──────────────────────────────────────────── */
+#adminScreen{display:none;}
+.admin-layout{display:flex;min-height:100vh;}
+.admin-sidebar{width:230px;background:#0c0e13;border-right:1px solid rgba(249,115,22,0.1);display:flex;flex-direction:column;flex-shrink:0;position:fixed;height:100vh;z-index:100;}
+.admin-sb-top{padding:18px 14px 14px;border-bottom:1px solid rgba(249,115,22,0.1);}
+.admin-brand{display:flex;align-items:center;gap:9px;}
+.admin-icon{width:28px;height:28px;background:var(--admin);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+.admin-title{font-size:14px;font-weight:700;letter-spacing:-0.3px;color:var(--admin);}
+.admin-sub{font-size:9px;color:rgba(249,115,22,0.5);font-family:var(--mono);}
+.admin-nav{padding:10px 8px;flex:1;overflow-y:auto;}
+.ani{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;transition:all 0.12s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:var(--font);}
+.ani:hover{background:rgba(249,115,22,0.07);color:rgba(255,255,255,0.8);}
+.ani.active{background:var(--admin-bg);color:var(--admin);border:1px solid var(--admin-border);}
+.admin-main{margin-left:230px;flex:1;display:flex;flex-direction:column;}
+.admin-topbar{background:#0c0e13;border-bottom:1px solid rgba(249,115,22,0.1);padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.admin-pt{font-size:14px;font-weight:600;color:var(--admin);}
+.admin-ps{font-size:11px;color:rgba(249,115,22,0.5);}
+.admin-pc{padding:22px;}
+.apg{display:none;}.apg.active{display:block;}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.asc{background:#0c0e13;border:1px solid rgba(249,115,22,0.12);border-radius:var(--rl);padding:14px 16px;}
+.asl{font-size:10px;color:rgba(249,115,22,0.5);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+.asv{font-size:22px;font-weight:600;color:var(--admin);}
+.ass{font-size:11px;color:rgba(255,255,255,0.25);margin-top:2px;}
+.atw{background:#0c0e13;border:1px solid rgba(249,115,22,0.12);border-radius:var(--rl);overflow:hidden;margin-bottom:18px;}
+.ath{padding:12px 16px;border-bottom:1px solid rgba(249,115,22,0.1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;}
+.log-row{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(249,115,22,0.06);font-size:12px;}
+.log-row:last-child{border-bottom:none;}
+.log-time{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.25);white-space:nowrap;padding-top:1px;width:120px;flex-shrink:0;}
+.log-icon{font-size:13px;flex-shrink:0;}
+.log-msg{color:rgba(255,255,255,0.65);line-height:1.5;}
+.log-user{color:var(--admin);font-weight:500;}
+.admin-sb-foot{padding:10px 10px;border-top:1px solid rgba(249,115,22,0.1);}
+.back-btn{width:100%;display:flex;align-items:center;gap:7px;padding:7px 10px;background:rgba(249,115,22,0.07);border:1px solid var(--admin-border);border-radius:7px;color:var(--admin);font-size:12px;cursor:pointer;font-family:var(--font);margin-bottom:5px;transition:all 0.12s;}
+.back-btn:hover{background:rgba(249,115,22,0.13);}
+.role-badge-admin{background:var(--admin-bg);color:var(--admin);border:1px solid var(--admin-border);}
+.role-badge-user{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(79,142,247,0.2);}
+.role-badge-suspended{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.role-badge-banned{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.rb{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.auth-msg{border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:12px;line-height:1.5;}
+.auth-msg.err{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
+.auth-msg.ok{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.form-group{margin-bottom:13px;}
+.form-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:0.05em;}
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+.hamburger{display:none;position:fixed;top:12px;left:12px;z-index:300;width:38px;height:38px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text2);}
+.hamburger:hover{background:var(--surface2);color:var(--text);}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99;}
+.sidebar-overlay.open{display:block;}
+
+@media(max-width:1024px){
+  .auth-left{width:260px;padding:28px 22px;}
+  .auth-pitch h2{font-size:17px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .admin-stats{grid-template-columns:repeat(2,1fr);}
+  .sidebar{width:200px;}
+  .main{margin-left:200px;}
+  .admin-sidebar{width:200px;}
+  .admin-main{margin-left:200px;}
+  .pc{padding:16px;}
+  .admin-pc{padding:16px;}
+  .si{width:160px;}
+}
+@media(max-width:768px){
+  .auth-wrap{flex-direction:column;width:100%;max-width:420px;}
+  .auth-left{width:100%;border-right:1px solid var(--border2);border-bottom:none;border-radius:var(--rl) var(--rl) 0 0;padding:24px 22px;min-height:auto;}
+  .auth-right{border-radius:0 0 var(--rl) var(--rl);padding:22px 20px;}
+  .auth-feature{display:none;}
+  .auth-footer-note{display:none;}
+  .auth-pitch p{display:none;}
+  .auth-pitch h2{font-size:16px;margin-bottom:0;}
+  .hamburger{display:flex;}
+  .sidebar{width:240px;transform:translateX(-100%);transition:transform 0.22s ease;z-index:200;}
+  .sidebar.mobile-open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .admin-sidebar{width:240px;transform:translateX(-100%);transition:transform 0.22s ease;z-index:200;}
+  .admin-sidebar.mobile-open{transform:translateX(0);}
+  .admin-main{margin-left:0;}
+  .topbar{padding:0 14px 0 56px;}
+  .admin-topbar{padding:0 14px 0 56px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .admin-stats{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .sc,.asc{padding:12px 13px;}
+  .sv,.asv{font-size:18px;}
+  .pc{padding:12px;}
+  .admin-pc{padding:12px;}
+  .card{padding:14px;}
+  .card h3{font-size:13px;}
+  .er{flex-direction:column;}
+  .er .ipt{width:100%;}
+  .er .btn{width:100%;justify-content:center;}
+  .th{flex-direction:column;align-items:flex-start;gap:8px;}
+  .thl{width:100%;flex-wrap:wrap;}
+  .ath{flex-direction:column;align-items:flex-start;gap:8px;}
+  .si{width:100%;}
+  .sw{width:100%;}
+  .sw .si{width:100%;}
+  .ts{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .ts table{min-width:640px;}
+  .btn-sm{padding:3px 7px;font-size:10px;}
+  .card > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}
+  #apg-overview > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}
+  .dr{width:100%;border-left:none;border-top:1px solid var(--border2);top:auto;bottom:0;height:85vh;border-radius:var(--rl) var(--rl) 0 0;transform:translateY(100%);}
+  .dr.open{transform:translateY(0);}
+  .md{width:95vw;padding:18px;}
+  .tc{bottom:12px;right:12px;left:12px;}
+  .toast{min-width:0;width:100%;}
+  .log-row{flex-wrap:wrap;gap:4px;}
+  .log-time{width:100%;}
+  #dbLbl{display:none;}
+  .uc{padding:7px 9px;}
+  .sb-user{padding:8px;}
+  #bulkCnt{font-size:11px;}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .admin-stats{grid-template-columns:1fr 1fr;}
+  .auth-wrap{max-width:100%;border-radius:0;}
+  .auth-left{border-radius:0;}
+  .auth-right{border-radius:0;min-height:100vh;}
+  #authScreen{align-items:flex-start;}
+  .sc{padding:10px 11px;}
+  .sv{font-size:16px;}
+  .sl{font-size:9px;}
+  .pt{font-size:13px;}
+  .ps{font-size:11px;}
+}
+@media(min-width:1400px){
+  .sidebar{width:250px;}
+  .main{margin-left:250px;}
+  .admin-sidebar{width:250px;}
+  .admin-main{margin-left:250px;}
+  .stats-grid{grid-template-columns:repeat(4,1fr);}
+  .admin-stats{grid-template-columns:repeat(4,1fr);}
+  .pc{padding:28px;}
+  .admin-pc{padding:28px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ AUTH ════════════════════ -->
+<div id="authScreen">
+  <div class="auth-glow auth-glow-1"></div>
+  <div class="auth-glow auth-glow-2"></div>
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">IQ</div>
+          <div><div class="brand-name">AccountIQ</div><div class="brand-sub">AI Enrichment CRM</div></div>
+        </div>
+        <div class="auth-pitch">
+          <h2>Enrich accounts with AI intelligence</h2>
+          <p>Automatically classify, tag, and enrich any company using AI — industry, account type, cloud platform, LinkedIn, and more.</p>
+          <div class="auth-feature"><div class="auth-feature-dot"></div> Single & bulk enrichment</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div> CSV upload & export</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div> Supabase-backed, per-user data</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div> Admin panel with full oversight</div>
+        </div>
+      </div>
+      <div class="auth-footer-note">Supabase Auth & DB · RLS data isolation per user</div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Register</button>
+      </div>
+      <div id="authMsg"></div>
+      <div id="loginForm">
+        <div class="fg"><label class="lbl">Email</label><input class="inp" type="email" id="lEmail" placeholder="you@company.com"/></div>
+        <div class="fg"><label class="lbl">Password</label><input class="inp" type="password" id="lPw" placeholder="Your password"/></div>
+        <button class="auth-btn" id="lBtn" onclick="doLogin()">Sign In →</button>
+        <span class="auth-link" onclick="switchTab('forgot')">Forgot password?</span>
+      </div>
+      <div id="registerForm" style="display:none">
+        <div class="fg"><label class="lbl">Full Name</label><input class="inp" type="text" id="rName" placeholder="Jane Smith"/></div>
+        <div class="fg"><label class="lbl">Email</label><input class="inp" type="email" id="rEmail" placeholder="you@company.com"/></div>
+        <div class="fg"><label class="lbl">Password</label><input class="inp" type="password" id="rPw" placeholder="Min 8 characters"/></div>
+        <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--green);margin-bottom:14px;line-height:1.6;">
+          ✓ <strong>No API key needed.</strong> AI enrichment is powered by a shared server-side function — just register and start enriching.
+        </div>
+        <button class="auth-btn" id="rBtn" onclick="doRegister()">Create Account →</button>
+        <div class="sec-note" style="margin-top:12px;">
+          <strong style="display:block;margin-bottom:3px;">🔒 Zero API key setup for users</strong>
+          The API key is stored securely in a Supabase Edge Function — users never enter it.
+        </div>
+      </div>
+      <div id="forgotForm" style="display:none">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">We'll send a password reset link to your email.</p>
+        <div class="fg"><label class="lbl">Email</label><input class="inp" type="email" id="fEmail" placeholder="you@company.com"/></div>
+        <button class="auth-btn" id="fBtn" onclick="doForgot()">Send Reset Link</button>
+        <span class="auth-link" onclick="switchTab('login')">← Back to sign in</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ USER APP ════════════════════ -->
+<div id="appScreen">
+<button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-brand">
+        <div class="sb-icon">IQ</div>
+        <div><div class="sb-name">AccountIQ</div><div class="sb-sub">AI Enrichment CRM</div></div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-sec">Workspace</div>
+      <button class="ni active" onclick="showPage('dashboard')"><span>◈</span> Dashboard</button>
+      <button class="ni" onclick="showPage('enrich')"><span>✦</span> Enrich Account</button>
+      <button class="ni" onclick="showPage('bulk')"><span>⊞</span> Bulk Enrich</button>
+      <button class="ni" onclick="showPage('upload')"><span>⇪</span> CSV Upload</button>
+      <div class="nav-sec">Data</div>
+      <button class="ni" onclick="showPage('accounts')"><span>≡</span> My Accounts <span class="nb" id="acBadge">0</span></button>
+      <button class="ni" onclick="showPage('export')"><span>↓</span> Export</button>
+      <div id="adminNavSection" style="display:none">
+        <div class="nav-sec" style="color:var(--admin);opacity:0.7;">Admin</div>
+        <button class="ni admin-ni" onclick="openAdmin()"><span>⬡</span> Admin Panel <span class="nb red">A</span></button>
+      </div>
+    </nav>
+    <div class="sb-user">
+      <button class="cfg-btn" onclick="openConfig()">⚙ Connection Settings</button>
+      <div class="uc">
+        <div class="ua" id="userAvatar">?</div>
+        <div class="ui"><div class="ue" id="userEmail">—</div><div class="ur" id="userRoleLabel">User</div></div>
+      </div>
+      <button class="lo-btn" onclick="doLogout()">⎋ Sign out</button>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div><div class="pt" id="pageTitle">Dashboard</div><div class="ps" id="pageSub">My enriched accounts</div></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;"><span class="dot dot-gr" id="dbDot"></span><span id="dbLbl">Supabase</span></span>
+        <button class="btn btn-s btn-sm" onclick="loadAccounts()">↻</button>
+      </div>
+    </div>
+    <div class="pc">
+      <!-- DASHBOARD -->
+      <div class="pg active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="sc"><div class="sl">Total Accounts</div><div class="sv" id="s-total">0</div><div class="ss">My records</div></div>
+          <div class="sc"><div class="sl">ISV</div><div class="sv" style="color:var(--accent)" id="s-isv">0</div><div class="ss">Software vendors</div></div>
+          <div class="sc"><div class="sl">Enterprise</div><div class="sv" style="color:var(--amber)" id="s-ent">0</div><div class="ss">Large orgs</div></div>
+          <div class="sc"><div class="sl">Consumer Portal</div><div class="sv" style="color:var(--teal)" id="s-cp">0</div><div class="ss">Marketplaces</div></div>
+        </div>
+        <div class="tw">
+          <div class="th"><span style="font-size:13px;font-weight:600;">Recent Accounts</span><button class="btn btn-s btn-sm" onclick="showPage('accounts')">View all →</button></div>
+          <div id="recentTbl"><div class="es"><div class="ei">◈</div><div class="et">No accounts yet</div><div class="esb">Enrich your first account to get started</div></div></div>
+        </div>
+      </div>
+      <!-- SINGLE ENRICH -->
+      <div class="pg" id="page-enrich">
+        <div class="card">
+          <h3>✦ Single Account Enrichment</h3>
+          <div class="er">
+            <input class="ipt" id="sWeb" placeholder="e.g. stripe.com"/>
+            <button class="btn btn-p" id="sBtn" onclick="enrichSingle()">Enrich ✦</button>
+          </div>
+          <div id="sStat" style="font-size:11px;color:var(--text3);min-height:15px;"></div>
+        </div>
+        <div id="sRes"></div>
+      </div>
+      <!-- BULK -->
+      <div class="pg" id="page-bulk">
+        <div class="card">
+          <h3>⊞ Bulk Enrichment</h3>
+          <p style="font-size:11px;color:var(--text3);margin-bottom:10px;">One website per line.</p>
+          <textarea class="ipt" id="bulkWS" placeholder="stripe.com&#10;freshworks.com&#10;zoho.com"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+            <span id="bulkCnt" style="font-size:11px;color:var(--text3)">0 websites</span>
+            <button class="btn btn-p" id="bulkBtn" onclick="startBulk()">Start Bulk ⊞</button>
+          </div>
+        </div>
+        <div id="bulkProg"></div>
+      </div>
+      <!-- CSV -->
+      <div class="pg" id="page-upload">
+        <div class="card">
+          <h3>⇪ CSV Upload & Enrich</h3>
+          <p style="font-size:11px;color:var(--text3);margin-bottom:12px;">Upload any CSV with a website/domain/url column. AI fills blank fields.</p>
+          <div class="uz" id="uploadZone" onclick="document.getElementById('csvFile').click()">
+            <div style="font-size:28px;margin-bottom:8px;">⇪</div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:3px;">Drop CSV or click to browse</div>
+            <div style="font-size:11px;color:var(--text3);">Needs a website / domain / url column</div>
+          </div>
+          <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(event)"/>
+          <div id="csvPrev"></div>
+        </div>
+      </div>
+      <!-- ACCOUNTS -->
+      <div class="pg" id="page-accounts">
+        <div class="tw">
+          <div class="th">
+            <div class="thl">
+              <div class="sw"><input class="si" id="srch" placeholder="Search..." oninput="filterAccs()"/></div>
+              <select class="ipt" id="fType" onchange="filterAccs()" style="width:150px;padding:5px 9px;font-size:12px;">
+                <option value="">All Types</option>
+                <option>Enterprise</option><option>ISV</option><option>Consumer Portal</option>
+                <option>Agency/Service Company</option><option>PE/VC Firms</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:7px;align-items:center;">
+              <span id="selCnt" style="font-size:11px;color:var(--text3);"></span>
+              <button class="btn btn-d btn-sm" id="delSelBtn" style="display:none" onclick="deleteSelected()">Delete Selected</button>
+              <button class="btn btn-s btn-sm" onclick="exportFiltered()">Export ↓</button>
+            </div>
+          </div>
+          <div id="accsTbl"><div class="es"><div class="ei">≡</div><div class="et">No accounts</div><div class="esb">Enrich some accounts first</div></div></div>
+        </div>
+      </div>
+      <!-- EXPORT -->
+      <div class="pg" id="page-export">
+        <div class="card">
+          <h3>↓ Export</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:3px;">All Accounts</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Complete dataset</div>
+              <button class="btn btn-p btn-sm" onclick="exportAll()">Export All ↓</button>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Filtered</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Current search results</div>
+              <button class="btn btn-s btn-sm" onclick="exportFiltered()">Export Filtered ↓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ ADMIN SCREEN ════════════════════ -->
+<div id="adminScreen">
+<button class="hamburger" id="adminHamburgerBtn" onclick="toggleAdminSidebar()" aria-label="Menu" style="display:none">☰</button>
+<div class="sidebar-overlay" id="adminSidebarOverlay" onclick="closeAdminSidebar()"></div>
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sb-top">
+      <div class="admin-brand">
+        <div class="admin-icon">⬡</div>
+        <div><div class="admin-title">Admin Panel</div><div class="admin-sub">AccountIQ Control Center</div></div>
+      </div>
+    </div>
+    <nav class="admin-nav">
+      <button class="ani active" onclick="showAdmin('overview')"><span>◈</span> Overview</button>
+      <button class="ani" onclick="showAdmin('users')"><span>⊙</span> Users</button>
+      <button class="ani" onclick="showAdmin('all-accounts')"><span>≡</span> All Accounts</button>
+      <button class="ani" onclick="showAdmin('logs')"><span>⋮</span> Activity Logs</button>
+    </nav>
+    <div class="admin-sb-foot">
+      <button class="back-btn" onclick="closeAdmin()">← Back to My CRM</button>
+      <div class="uc" style="background:rgba(249,115,22,0.07);border-color:var(--admin-border);">
+        <div class="ua admin-ua" id="adminAvatar">A</div>
+        <div class="ui"><div class="ue" id="adminEmail">—</div><div class="ur" style="color:var(--admin);">Administrator</div></div>
+      </div>
+    </div>
+  </aside>
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div><div class="admin-pt" id="adminPageTitle">Overview</div><div class="admin-ps" id="adminPageSub">System-wide statistics</div></div>
+      <div style="display:flex;gap:8px;"><button class="btn btn-a btn-sm" onclick="loadAdminData()">↻ Refresh</button></div>
+    </div>
+    <div class="admin-pc">
+      <!-- ADMIN OVERVIEW -->
+      <div class="apg active" id="apg-overview">
+        <div class="admin-stats">
+          <div class="asc"><div class="asl">Total Users</div><div class="asv" id="a-users">0</div><div class="ass">Registered accounts</div></div>
+          <div class="asc"><div class="asl">Total Accounts</div><div class="asv" id="a-accs">0</div><div class="ass">Across all users</div></div>
+          <div class="asc"><div class="asl">Admins</div><div class="asv" id="a-admins">0</div><div class="ass">With admin role</div></div>
+          <div class="asc"><div class="asl">Activity Logs</div><div class="asv" id="a-logs">0</div><div class="ass">Total events</div></div>
+        </div>
+        <div class="atw">
+          <div class="ath"><span style="font-size:13px;font-weight:600;color:var(--admin);">Recent Activity</span></div>
+          <div id="recentLogs"><div class="es"><div class="ei">⋮</div><div class="et">No activity yet</div></div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;">
+          <div class="atw"><div class="ath"><span style="font-size:12px;font-weight:600;color:var(--admin);">Top Users by Accounts</span></div><div id="topUsers"><div class="es" style="padding:24px;"><div class="esb">Loading...</div></div></div></div>
+          <div class="atw"><div class="ath"><span style="font-size:12px;font-weight:600;color:var(--admin);">Account Type Breakdown</span></div><div id="typeBreakdown"><div class="es" style="padding:24px;"><div class="esb">Loading...</div></div></div></div>
+        </div>
+      </div>
+      <!-- ADMIN USERS -->
+      <div class="apg" id="apg-users">
+        <div class="atw">
+          <div class="ath" style="flex-wrap:wrap;gap:8px;">
+            <span style="font-size:13px;font-weight:600;color:var(--admin);">All Users</span>
+            <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+              <div class="sw"><input class="si" id="uSrch" placeholder="Search users..." oninput="filterUsers()"/></div>
+              <select id="uStatusFilter" onchange="filterUsers()" style="background:var(--surface2);border:1px solid rgba(249,115,22,0.2);border-radius:6px;padding:5px 9px;color:var(--text);font-size:12px;font-family:var(--font);outline:none;">
+                <option value="">All Status</option><option value="user">Active</option><option value="admin">Admin</option><option value="suspended">Suspended</option><option value="banned">Banned</option>
+              </select>
+              <button class="btn btn-a btn-sm" onclick="exportUsersCSV()">Export Users ↓</button>
+              <button class="btn btn-p btn-sm" onclick="openAddUserModal()">+ Add User</button>
+            </div>
+          </div>
+          <div id="usersTbl"><div class="es"><div class="ei">⊙</div><div class="et">Loading users...</div></div></div>
+        </div>
+      </div>
+      <!-- ADMIN ALL ACCOUNTS -->
+      <div class="apg" id="apg-all-accounts">
+        <div class="atw">
+          <div class="ath">
+            <span style="font-size:13px;font-weight:600;color:var(--admin);">All Accounts</span>
+            <div style="display:flex;gap:7px;">
+              <div class="sw"><input class="si" id="aaSrch" placeholder="Search..." oninput="filterAdminAccs()"/></div>
+              <button class="btn btn-a btn-sm" onclick="exportAdminCSV()">Export All ↓</button>
+            </div>
+          </div>
+          <div id="adminAccsTbl"><div class="es"><div class="ei">≡</div><div class="et">Loading...</div></div></div>
+        </div>
+      </div>
+      <!-- ADMIN LOGS -->
+      <div class="apg" id="apg-logs">
+        <div class="atw">
+          <div class="ath">
+            <span style="font-size:13px;font-weight:600;color:var(--admin);">Activity Logs</span>
+            <div style="display:flex;gap:7px;align-items:center;">
+              <select id="logFilter" onchange="filterLogs()" style="background:var(--surface2);border:1px solid rgba(249,115,22,0.2);border-radius:6px;padding:4px 8px;color:var(--text);font-size:11px;font-family:var(--font);outline:none;">
+                <option value="">All Events</option><option value="login">Login</option><option value="register">Register</option><option value="enrich">Enrich</option><option value="delete">Delete</option><option value="role">Role Change</option>
+              </select>
+              <button class="btn btn-a btn-sm" onclick="clearLogs()">Clear Logs</button>
+            </div>
+          </div>
+          <div id="logsTbl" style="max-height:600px;overflow-y:auto;"><div class="es"><div class="ei">⋮</div><div class="et">No logs yet</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Modals -->
+<div class="mo" id="cfgModal">
+  <div class="md">
+    <h2>⚙ App Configuration</h2>
+    <p class="md-sub">Supabase credentials are safe to expose — protected by RLS.</p>
+    <div style="margin-bottom:13px;"><label class="lbl">Supabase Project URL</label><input class="ipt" id="cfgU" placeholder="https://xxxx.supabase.co" style="width:100%"/><div class="hint">Found in Supabase → Settings → API</div></div>
+    <div style="margin-bottom:13px;"><label class="lbl">Supabase Anon Key</label><input class="ipt" id="cfgK" type="password" placeholder="eyJ..." style="width:100%"/></div>
+    <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--amber);margin-bottom:13px;line-height:1.6;">🔒 API key is stored securely in your Supabase Edge Function — never in the browser.</div>
+    <div class="mf"><button class="btn btn-g" onclick="document.getElementById('cfgModal').classList.remove('open')">Cancel</button><button class="btn btn-p" onclick="saveConfig()">Save & Reconnect</button></div>
+  </div>
+</div>
+<div class="mo" id="roleModal">
+  <div class="md" style="width:380px;">
+    <h2>Assign Role</h2><p class="md-sub" id="roleMdSub">Change role for user</p>
+    <div style="margin-bottom:13px;"><label class="lbl">Role</label><select class="ipt" id="roleSelect" style="width:100%;"><option value="user">User</option><option value="admin">Admin</option></select></div>
+    <div class="mf"><button class="btn btn-g" onclick="document.getElementById('roleModal').classList.remove('open')">Cancel</button><button class="btn btn-a" onclick="confirmRoleChange()">Update Role</button></div>
+  </div>
+</div>
+<div class="mo" id="addUserModal">
+  <div class="md" style="width:480px;">
+    <h2>Add New User</h2><p class="md-sub">Create a new user account manually.</p>
+    <div id="addUserMsg"></div>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="ipt" id="addUserName" placeholder="Jane Smith" style="width:100%"/></div>
+    <div class="form-group"><label class="form-label">Email Address</label><input class="ipt" id="addUserEmail" type="email" placeholder="jane@company.com" style="width:100%"/></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="ipt" id="addUserPassword" type="password" placeholder="Minimum 8 characters" style="width:100%"/><div class="hint">User can change this after first login.</div></div>
+    <div class="form-group"><label class="form-label">Role</label><select class="ipt" id="addUserRole" style="width:100%;"><option value="user">User</option><option value="admin">Admin</option></select></div>
+    <div class="mf"><button class="btn btn-g" onclick="closeAddUserModal()">Cancel</button><button class="btn btn-p" id="addUserBtn" onclick="submitAddUser()">Create User</button></div>
+  </div>
+</div>
+<div class="mo" id="editUserModal">
+  <div class="md" style="width:480px;">
+    <h2>Edit User</h2><p class="md-sub" id="editUserSubtitle">Update user details</p>
+    <div id="editUserMsg"></div>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="ipt" id="editUserName" placeholder="Full name" style="width:100%"/></div>
+    <div class="form-group"><label class="form-label">Email Address</label><input class="ipt" id="editUserEmail" type="email" placeholder="Email" style="width:100%"/></div>
+    <div class="form-group"><label class="form-label">New Password <span style="color:var(--text3);font-weight:400;">(leave blank to keep current)</span></label><input class="ipt" id="editUserPassword" type="password" placeholder="Leave blank to keep unchanged" style="width:100%"/></div>
+    <div class="form-group"><label class="form-label">Role</label><select class="ipt" id="editUserRole" style="width:100%;"><option value="user">User</option><option value="admin">Admin</option><option value="suspended">Suspended</option><option value="banned">Banned</option></select></div>
+    <div class="mf"><button class="btn btn-g" onclick="closeEditUserModal()">Cancel</button><button class="btn btn-p" id="editUserBtn" onclick="submitEditUser()">Save Changes</button></div>
+  </div>
+</div>
+<div class="mo" id="userDetailModal">
+  <div class="md" style="width:560px;max-height:85vh;overflow-y:auto;">
+    <h2 id="udmTitle">User Details</h2><p class="md-sub" id="udmEmail">—</p>
+    <div id="udmBody"></div>
+    <div class="mf"><button class="btn btn-g" onclick="document.getElementById('userDetailModal').classList.remove('open')">Close</button></div>
+  </div>
+</div>
+<div class="mo" id="deleteUserModal">
+  <div class="md" style="width:420px;">
+    <h2>Delete User Account</h2><p class="md-sub">This will permanently delete the user and all their data. This cannot be undone.</p>
+    <div id="deleteUserInfo" style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:4px;"></div>
+    <div style="margin-top:14px;"><label class="lbl">Type DELETE to confirm</label><input class="ipt" id="deleteConfirmInput" placeholder="Type DELETE" style="width:100%;margin-top:6px;" oninput="document.getElementById('confirmDeleteBtn').disabled=this.value!=='DELETE'"/></div>
+    <div class="mf"><button class="btn btn-g" onclick="document.getElementById('deleteUserModal').classList.remove('open');document.getElementById('deleteConfirmInput').value='';">Cancel</button><button class="btn btn-d" id="confirmDeleteBtn" disabled onclick="confirmDeleteUser()">Delete Permanently</button></div>
+  </div>
+</div>
+<div class="dr" id="detailDrawer">
+  <div class="drh"><span style="font-size:13px;font-weight:600;" id="dTitle">Account</span><button class="btn btn-g btn-sm" onclick="document.getElementById('detailDrawer').classList.remove('open')">✕</button></div>
+  <div class="drb" id="dBody"></div>
+</div>
+<div class="tc" id="toastC"></div>
+
+<script>
+// ─────────────────────────────────────────────────
+// GLOBALS
+// ─────────────────────────────────────────────────
+let SB=null,CU=null,isAdmin=false;
+let allAccounts=[],filteredAccounts=[],selectedIds=new Set();
+let allUsers=[],allAdminAccounts=[],allLogs=[],filteredLogs=[],filteredAdminAccs=[];
+let roleTarget=null;
+let csvHeaders=[],csvRows=[];
+
+// ─────────────────────────────────────────────────
+// FIX 2 — XSS sanitization helper
+// Escapes all HTML special characters before any AI-returned
+// value is written into innerHTML. Prevents injected <script>
+// tags or event handler attributes from executing in the page.
+// ─────────────────────────────────────────────────
+function esc(s){
+  if(s===null||s===undefined)return'';
+  const d=document.createElement('div');
+  d.textContent=String(s);
+  return d.innerHTML;
+}
+
+// ─────────────────────────────────────────────────
+// FIX 3 — Consolidated credential config
+// Single source of truth: DEFAULT_* constants set once here.
+// localStorage overrides (from ⚙ Configure) are read through
+// the same gc() function — no more dual code paths.
+// ─────────────────────────────────────────────────
+const DEFAULT_SUPABASE_URL='https://jzpngsntyteveejvphbz.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cG5nc250eXRldmVlanZwaGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTA0MDUsImV4cCI6MjA4OTEyNjQwNX0.KculkXh7LRxd2zlxtjyzqkiwUEZyVU5fkIjeJ_wDM4U';
+
+function gc(){
+  return{
+    u:localStorage.getItem('iq_u')||DEFAULT_SUPABASE_URL,
+    k:localStorage.getItem('iq_k')||DEFAULT_SUPABASE_ANON_KEY,
+  };
+}
+
+const SETUP_SQL=`
+-- AccountIQ v5 — Full Database Setup SQL
+create table public.profiles(id uuid references auth.users primary key,email text,full_name text,role text default 'user',created_at timestamptz default now());
+alter table public.profiles enable row level security;
+create policy "profiles_select" on public.profiles for select using(auth.uid()=id);
+create policy "profiles_update_own" on public.profiles for update using(auth.uid()=id);
+create policy "profiles_insert_own" on public.profiles for insert with check(auth.uid()=id);
+create table public.accounts(id bigint generated always as identity primary key,user_id uuid references auth.users not null,account_name text,website text,dra_insights text,engineering_it text,devops text,employee_count text,account_type_by_size text,cloud_platform text,account_type text,account_type_reason text,account_linkedin text,business_type text,industry text,sub_industry text,revenue_usd text,billing_city text,billing_state text,billing_country text,region text,time_zone text,created_at timestamptz default now());
+alter table public.accounts enable row level security;
+create policy "accounts_own" on public.accounts for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create table public.activity_logs(id bigint generated always as identity primary key,user_id uuid references auth.users,user_email text,event_type text,message text,metadata jsonb,created_at timestamptz default now());
+alter table public.activity_logs enable row level security;
+create policy "logs_insert" on public.activity_logs for insert with check(true);
+-- Rate limits table (DB-backed, replaces in-memory map)
+create table public.rate_limits(user_id uuid references auth.users on delete cascade primary key,count integer not null default 0,reset_at timestamptz not null default now()+interval '1 hour');
+alter table public.rate_limits enable row level security;
+create policy "rate_limits_own" on public.rate_limits for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+-- Admin functions
+create or replace function get_all_profiles() returns table(id uuid,email text,full_name text,role text,created_at timestamptz,last_sign_in_at timestamptz) language sql security definer as $$ select p.id,p.email,p.full_name,p.role,p.created_at,u.last_sign_in_at from profiles p left join auth.users u on u.id=p.id order by p.created_at desc; $$;
+create or replace function get_all_accounts() returns setof accounts language sql security definer as $$ select * from accounts order by created_at desc; $$;
+create or replace function get_all_logs() returns setof activity_logs language sql security definer as $$ select * from activity_logs order by created_at desc limit 500; $$;
+create or replace function update_user_role(target_id uuid,new_role text) returns void language sql security definer as $$ update profiles set role=new_role where id=target_id; $$;
+create or replace function delete_user_accounts(target_id uuid) returns void language sql security definer as $$ delete from accounts where user_id=target_id; $$;
+create or replace function admin_delete_account(acc_id bigint) returns void language sql security definer as $$ delete from accounts where id=acc_id; $$;
+create or replace function clear_activity_logs() returns void language sql security definer as $$ delete from activity_logs; $$;
+`;
+console.log('%c AccountIQ Supabase Setup SQL:','color:#4f8ef7;font-weight:bold;font-size:14px;');
+console.log(SETUP_SQL);
+
+// ─────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────
+const initSB=(u,k)=>{try{return window.supabase.createClient(u,k);}catch(e){return null;}};
+function toast(msg,type='success'){const el=document.createElement('div');el.className='toast '+type;el.innerHTML=`<span>${type==='success'?'✓':'✗'}</span>${esc(msg)}`;document.getElementById('toastC').appendChild(el);setTimeout(()=>el.remove(),3500);}
+function setDB(ok){document.getElementById('dbDot').className='dot '+(ok?'dot-g':'dot-r');}
+function badgeHtml(v,cls){if(!cls){const l=(v||'').toLowerCase();cls='b-gray';if(l.includes('isv'))cls='b-blue';else if(l.includes('enterprise'))cls='b-amber';else if(l.includes('consumer'))cls='b-teal';else if(l.includes('agency'))cls='b-purple';else if(l.includes('pe')||l.includes('vc'))cls='b-purple';else if(l.includes('b2b')&&l.includes('b2c'))cls='b-teal';else if(l.includes('b2b'))cls='b-blue';else if(l.includes('b2c'))cls='b-green';else if(l.includes('aws'))cls='b-amber';else if(l.includes('gcp'))cls='b-blue';else if(l.includes('azure'))cls='b-purple';}return`<span class="badge ${cls}">${esc(v)||'—'}</span>`;}
+function fmtDate(d){if(!d)return'—';const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+
+// ─────────────────────────────────────────────────
+// AUTH
+// ─────────────────────────────────────────────────
+function switchTab(t){
+  ['login','register','forgot'].forEach(x=>{
+    document.getElementById(x+'Form').style.display='none';
+    const el=document.getElementById('tab'+x[0].toUpperCase()+x.slice(1));if(el)el.classList.remove('active');
+  });
+  document.getElementById(t+'Form').style.display='block';
+  const a=document.getElementById('tab'+t[0].toUpperCase()+t.slice(1));if(a)a.classList.add('active');
+  document.getElementById('authMsg').innerHTML='';
+}
+function showMsg(m,t='err'){document.getElementById('authMsg').innerHTML=`<div class="auth-msg ${t}">${esc(m)}</div>`;}
+
+// FIX 5 — Role check at login
+// Checks profile role before allowing entry. Suspended/banned users
+// are signed out immediately and shown a clear error message.
+async function doLogin(){
+  const email=document.getElementById('lEmail').value.trim(),pw=document.getElementById('lPw').value;
+  if(!email||!pw)return showMsg('Enter email and password.');
+  const c=gc();if(!c.u||!c.k)return showMsg('Supabase not configured. Add credentials via ⚙ Configure.');
+  const btn=document.getElementById('lBtn');btn.disabled=true;btn.textContent='Signing in...';
+  SB=initSB(c.u,c.k);
+  const{data,error}=await SB.auth.signInWithPassword({email,password:pw});
+  if(error){showMsg(error.message);btn.disabled=false;btn.textContent='Sign In →';return;}
+  CU=data.user;
+  // FIX 5: fetch role before entering app
+  const{data:profile}=await SB.from('profiles').select('role').eq('id',CU.id).single();
+  if(profile?.role==='suspended'){
+    await SB.auth.signOut();CU=null;
+    showMsg('Your account has been suspended. Contact your administrator.');
+    btn.disabled=false;btn.textContent='Sign In →';return;
+  }
+  if(profile?.role==='banned'){
+    await SB.auth.signOut();CU=null;
+    showMsg('Your account has been banned. Contact your administrator.');
+    btn.disabled=false;btn.textContent='Sign In →';return;
+  }
+  await logEvent('login',`User signed in`,{email});
+  await enterApp();
+}
+
+async function doRegister(){
+  const name=document.getElementById('rName').value.trim(),email=document.getElementById('rEmail').value.trim(),pw=document.getElementById('rPw').value;
+  if(!email||!pw)return showMsg('Email and password required.');
+  if(pw.length<8)return showMsg('Password must be at least 8 characters.');
+  const c=gc();if(!c.u||!c.k)return showMsg('Supabase not configured.');
+  const btn=document.getElementById('rBtn');btn.disabled=true;btn.textContent='Creating...';
+  SB=initSB(c.u,c.k);
+  const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{full_name:name}}});
+  if(error){showMsg(error.message);btn.disabled=false;btn.textContent='Create Account →';return;}
+  if(data.user){
+    await SB.from('profiles').upsert({id:data.user.id,email,full_name:name,role:'user'});
+    await logEvent('register',`New user registered`,{email,name});
+  }
+  if(data.session){CU=data.user;await enterApp();}
+  else{showMsg('Account created! Check your email to confirm, then sign in.','ok');btn.disabled=false;btn.textContent='Create Account →';switchTab('login');}
+}
+
+async function doForgot(){
+  const email=document.getElementById('fEmail').value.trim();if(!email)return showMsg('Enter your email.');
+  const c=gc();SB=initSB(c.u,c.k);if(!SB)return showMsg('Supabase not configured.');
+  const btn=document.getElementById('fBtn');btn.disabled=true;btn.textContent='Sending...';
+  const{error}=await SB.auth.resetPasswordForEmail(email);
+  if(error)showMsg(error.message);else showMsg('Reset link sent! Check your email.','ok');
+  btn.disabled=false;btn.textContent='Send Reset Link';
+}
+
+async function doLogout(){
+  await logEvent('logout',`User signed out`,{email:CU?.email});
+  if(SB)await SB.auth.signOut();
+  CU=null;isAdmin=false;allAccounts=[];filteredAccounts=[];
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('adminScreen').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+  switchTab('login');
+  setTimeout(syncHamburgers,50);
+}
+
+// ─────────────────────────────────────────────────
+// ENTER APP
+// ─────────────────────────────────────────────────
+async function enterApp(){
+  const{data:prof}=await SB.from('profiles').select('*').eq('id',CU.id).single();
+
+  // FIX 5b — Second-layer defence for persisted sessions.
+  // Catches users who were suspended/banned after their session was created.
+  if(prof?.role==='suspended'||prof?.role==='banned'){
+    await SB.auth.signOut();CU=null;
+    document.getElementById('appScreen').style.display='none';
+    document.getElementById('authScreen').style.display='flex';
+    showMsg('Your account access has been revoked. Contact your administrator.');
+    return;
+  }
+
+  if(prof&&prof.role==='admin')isAdmin=true;
+  if(!prof){await SB.from('profiles').upsert({id:CU.id,email:CU.email,full_name:CU.user_metadata?.full_name||'',role:'user'});}
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  const email=CU?.email||'';
+  document.getElementById('userEmail').textContent=email;
+  document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
+  if(isAdmin){
+    document.getElementById('userRoleLabel').textContent='Administrator';
+    document.getElementById('userAvatar').classList.add('admin-ua');
+    document.getElementById('adminNavSection').style.display='block';
+  }
+  setDB(true);
+  await loadAccounts();
+  toast('Welcome back, '+(email.split('@')[0]||'user')+'!','success');
+  setTimeout(syncHamburgers,50);
+}
+
+// ─────────────────────────────────────────────────
+// ADMIN
+// ─────────────────────────────────────────────────
+async function openAdmin(){
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('adminScreen').style.display='block';
+  const email=CU?.email||'';
+  document.getElementById('adminEmail').textContent=email;
+  document.getElementById('adminAvatar').textContent=email.charAt(0).toUpperCase();
+  await loadAdminData();
+  setTimeout(syncHamburgers,50);
+}
+function closeAdmin(){
+  document.getElementById('adminScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  closeAdminSidebar();setTimeout(syncHamburgers,50);
+}
+
+// ─────────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────────
+function openConfig(){const c=gc();document.getElementById('cfgU').value=c.u;document.getElementById('cfgK').value=c.k;document.getElementById('cfgModal').classList.add('open');}
+function saveConfig(){
+  localStorage.setItem('iq_u',document.getElementById('cfgU').value.trim());
+  localStorage.setItem('iq_k',document.getElementById('cfgK').value.trim());
+  const c=gc();SB=initSB(c.u,c.k);
+  document.getElementById('cfgModal').classList.remove('open');
+  toast('Configuration saved — reload to apply','success');
+  if(CU)loadAccounts();
+}
+
+// ─────────────────────────────────────────────────
+// ACTIVITY LOG
+// ─────────────────────────────────────────────────
+async function logEvent(type,msg,meta={}){
+  if(!SB)return;
+  try{await SB.from('activity_logs').insert([{user_id:CU?.id||null,user_email:CU?.email||meta.email||null,event_type:type,message:msg,metadata:meta}]);}catch(e){}
+}
+
+// ─────────────────────────────────────────────────
+// DB — USER ACCOUNTS
+// ─────────────────────────────────────────────────
+async function saveAccount(acc){
+  if(!SB||!CU){allAccounts.unshift(acc);renderAccsTable();updateStats();return;}
+  const{data,error}=await SB.from('accounts').insert([{
+    user_id:CU.id,account_name:acc.accountName,website:acc.website,
+    dra_insights:acc.draInsights,engineering_it:acc.engineeringIT,devops:acc.devOps,
+    employee_count:acc.employeeCount,account_type_by_size:acc.accountTypeBySize,
+    cloud_platform:acc.cloudPlatform,account_type:acc.accountType,
+    account_type_reason:acc.accountTypeReason,account_linkedin:acc.accountLinkedIn,
+    business_type:acc.businessType,industry:acc.industry,sub_industry:acc.subIndustry,
+    revenue_usd:acc.revenueUSD,billing_city:acc.billingCity,billing_state:acc.billingState,
+    billing_country:acc.billingCountry,region:acc.region,time_zone:acc.timeZone
+  }]).select();
+  if(error){toast('DB: '+error.message,'error');allAccounts.unshift(acc);}
+  else{allAccounts.unshift({...acc,id:data[0].id});}
+  renderAccsTable();updateStats();
+}
+
+async function loadAccounts(){
+  if(!SB){setDB(false);return;}
+  const{data,error}=await SB.from('accounts').select('*').order('created_at',{ascending:false});
+  if(error){setDB(false);return;}
+  setDB(true);
+  allAccounts=(data||[]).map(r=>({
+    id:r.id,accountName:r.account_name,website:r.website,
+    draInsights:r.dra_insights,engineeringIT:r.engineering_it,devOps:r.devops,
+    employeeCount:r.employee_count,accountTypeBySize:r.account_type_by_size,
+    cloudPlatform:r.cloud_platform,accountType:r.account_type,
+    accountTypeReason:r.account_type_reason,accountLinkedIn:r.account_linkedin,
+    businessType:r.business_type,industry:r.industry,subIndustry:r.sub_industry,
+    revenueUSD:r.revenue_usd,billingCity:r.billing_city,billingState:r.billing_state,
+    billingCountry:r.billing_country,region:r.region,timeZone:r.time_zone,createdAt:r.created_at
+  }));
+  filteredAccounts=[...allAccounts];renderAccsTable();renderRecentTbl();updateStats();
+  document.getElementById('acBadge').textContent=allAccounts.length;
+}
+
+async function deleteAccount(id){
+  if(SB)await SB.from('accounts').delete().eq('id',id);
+  await logEvent('delete',`Deleted account`,{account_id:id});
+  allAccounts=allAccounts.filter(a=>String(a.id)!==String(id));
+  filteredAccounts=filteredAccounts.filter(a=>String(a.id)!==String(id));
+  // Close drawer AFTER delete completes (not before)
+  document.getElementById('detailDrawer').classList.remove('open');
+  renderAccsTable();updateStats();
+  toast('Account deleted','success');
+}
+
+async function deleteSelected(){
+  for(const id of selectedIds){if(SB)await SB.from('accounts').delete().eq('id',id);}
+  await logEvent('delete',`Bulk deleted ${selectedIds.size} accounts`);
+  allAccounts=allAccounts.filter(a=>!selectedIds.has(String(a.id)));
+  filteredAccounts=filteredAccounts.filter(a=>!selectedIds.has(String(a.id)));
+  selectedIds.clear();renderAccsTable();updateStats();
+  document.getElementById('delSelBtn').style.display='none';document.getElementById('selCnt').textContent='';
+  toast('Selected deleted','success');
+}
+
+// ─────────────────────────────────────────────────
+// AI — callAI via Edge Function
+// ─────────────────────────────────────────────────
+async function callAI(website){
+  if(!SB||!CU)throw new Error('Not authenticated.');
+  const c=gc();
+  if(!c.u)throw new Error('Supabase not configured. Open ⚙ Configure.');
+  const{data:{session},error:sessErr}=await SB.auth.getSession();
+  if(sessErr||!session)throw new Error('Session expired — please sign in again.');
+  const edgeFnUrl=c.u.replace(/\/$/,'')+'/functions/v1/enrich';
+  let r;
+  try{
+    r=await fetch(edgeFnUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':c.k},
+      body:JSON.stringify({website})
+    });
+  }catch(e){throw new Error('Could not reach the server. Check your Supabase URL.');}
+  let result;
+  try{result=await r.json();}catch(e){throw new Error('Invalid server response. Try again.');}
+  if(!r.ok)throw new Error(result?.error||'Enrichment failed (HTTP '+r.status+')');
+  if(result.error)throw new Error(result.error);
+  if(typeof result.remaining==='number'&&result.remaining<10)toast('Rate limit: '+result.remaining+' enrichments left this hour','error');
+  return result.data;
+}
+
+// ─────────────────────────────────────────────────
+// SINGLE ENRICH
+// ─────────────────────────────────────────────────
+async function enrichSingle(){
+  let w=document.getElementById('sWeb').value.trim();if(!w)return;
+  if(w.includes('.')){w=w.replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*$/,'').toLowerCase();}
+  const btn=document.getElementById('sBtn'),st=document.getElementById('sStat');
+  btn.disabled=true;btn.innerHTML='<span class="spin">◌</span>';
+  st.textContent='Researching '+w+'...';document.getElementById('sRes').innerHTML='';
+  try{
+    const acc=await callAI(w);acc.id=Date.now();acc.website=w;
+    await saveAccount(acc);
+    await logEvent('enrich',`Enriched account: ${acc.accountName||w}`,{website:w,accountType:acc.accountType});
+    document.getElementById('sRes').innerHTML=cardHtml(acc);
+    st.innerHTML='<span style="color:var(--green)">✓ Saved</span>';
+    toast((acc.accountName||w)+' enriched','success');
+  }catch(e){st.innerHTML='<span style="color:var(--red)">✗ '+esc(e.message)+'</span>';toast(e.message,'error');}
+  btn.disabled=false;btn.innerHTML='Enrich ✦';
+}
+
+// FIX 2 — cardHtml uses esc() on all AI-returned values
+function cardHtml(acc){
+  const rows=[
+    ['Account Name',esc(acc.accountName)],['Website',esc(acc.website)],
+    ['Account Type',esc(acc.accountType)],['Account Type Reason',esc(acc.accountTypeReason)],
+    ['Account Type By Size',esc(acc.accountTypeBySize)],['Business Type',esc(acc.businessType)],
+    ['Cloud Platform',esc(acc.cloudPlatform)],['Industry',esc(acc.industry)],
+    ['Sub-Industry',esc(acc.subIndustry)],['Employee Count',esc(acc.employeeCount)],
+    ['Revenue (USD M)',esc(acc.revenueUSD)],['Billing City',esc(acc.billingCity)],
+    ['Billing State',esc(acc.billingState)],['Billing Country',esc(acc.billingCountry)],
+    ['Region',esc(acc.region)],['Time Zone',esc(acc.timeZone)],
+    ['LinkedIn',acc.accountLinkedIn
+      ?`<a href="${esc(acc.accountLinkedIn)}" target="_blank" rel="noopener noreferrer" style="color:var(--teal)">${esc(acc.accountLinkedIn)}</a>`
+      :'—']
+  ];
+  return`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden;">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <div style="width:32px;height:32px;border-radius:7px;background:var(--accent-glow);border:1px solid rgba(79,142,247,0.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--accent);">${esc((acc.accountName||'?')[0])}</div>
+      <div><div style="font-size:13px;font-weight:600;">${esc(acc.accountName)||'Unknown'}</div><div style="font-size:11px;color:var(--text3);font-family:var(--mono);">${esc(acc.website)}</div></div>
+      <div style="margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;">${badgeHtml(acc.accountType)}${badgeHtml(acc.businessType)}${badgeHtml(acc.accountTypeBySize)}</div>
+    </div>
+    ${acc.draInsights?`<div style="padding:10px 14px;background:var(--accent-glow);border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.6;">${esc(acc.draInsights)}</div>`:''}
+    ${acc.engineeringIT||acc.devOps?`<div style="padding:9px 14px;border-bottom:1px solid var(--border);">
+      ${acc.engineeringIT?`<div style="margin-bottom:6px;"><span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;">Engineering & IT</span><div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5;">${esc(acc.engineeringIT)}</div></div>`:''}
+      ${acc.devOps?`<div><span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;">DevOps</span><div style="font-size:12px;color:var(--text2);margin-top:3px;line-height:1.5;">${esc(acc.devOps)}</div></div>`:''}</div>`:''}
+    <table style="width:100%;border-collapse:collapse;">${rows.map(([k,v])=>`<tr><td style="padding:8px 14px;font-size:11px;color:var(--text3);font-weight:600;width:140px;border-bottom:1px solid var(--border);">${k}</td><td style="padding:8px 14px;font-size:12px;border-bottom:1px solid var(--border);">${v||'—'}</td></tr>`).join('')}</table>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────────
+// BULK ENRICH
+// ─────────────────────────────────────────────────
+async function startBulk(){
+  const lines=document.getElementById('bulkWS').value.trim().split('\n').filter(l=>l.trim());if(!lines.length)return;
+  const btn=document.getElementById('bulkBtn');btn.disabled=true;
+  let done=0;const total=lines.length,st={};lines.forEach(l=>st[l]='queued');
+  document.getElementById('bulkProg').innerHTML=`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;font-weight:600;">Processing ${total}</span><span id="bpt" style="font-size:11px;color:var(--text3)">0 / ${total}</span></div><div class="pbw"><div class="pb" id="bpb" style="width:0%"></div></div><div id="bpj" style="margin-top:12px;"></div></div>`;
+  const rj=()=>{document.getElementById('bpj').innerHTML=lines.map(l=>`<div class="jr"><span class="js">${esc(l)}</span><span class="badge ${st[l]==='done'?'b-green':st[l]==='error'?'b-red':st[l]==='running'?'b-blue':'b-gray'}">${st[l]}</span></div>`).join('');};rj();
+  for(const w of lines){
+    st[w]='running';rj();
+    try{const acc=await callAI(w.trim());acc.id=Date.now()+Math.random();acc.website=w.trim();await saveAccount(acc);await logEvent('enrich',`Bulk enriched: ${acc.accountName||w}`,{website:w});st[w]='done';}
+    catch(e){st[w]='error';}
+    done++;const pt=document.getElementById('bpt');if(pt)pt.textContent=done+' / '+total;
+    const pb=document.getElementById('bpb');if(pb)pb.style.width=Math.round(done/total*100)+'%';
+    rj();await new Promise(r=>setTimeout(r,500));
+  }
+  btn.disabled=false;
+  const successes=lines.filter(l=>st[l]==='done').length;
+  await logEvent('enrich',`Bulk enrichment: ${successes}/${total} succeeded`);
+  toast(`Bulk complete: ${successes} succeeded`,'success');
+}
+
+// ─────────────────────────────────────────────────
+// CSV
+// ─────────────────────────────────────────────────
+function handleCSV(e){const f=e.target.files[0];if(f)processCSV(f);}
+function parseCSVLine(line){const r=[];let c='',q=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){q=!q;continue;}if(line[i]===','&&!q){r.push(c.trim());c='';}else c+=line[i];}r.push(c.trim());return r;}
+function processCSV(file){const rd=new FileReader();rd.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(!lines.length)return;csvHeaders=parseCSVLine(lines[0]);csvRows=lines.slice(1).map(l=>parseCSVLine(l));renderCSVPrev();};rd.readAsText(file);}
+function renderCSVPrev(){
+  const wc=csvHeaders.findIndex(h=>/website|domain|url/i.test(h));
+  const p=document.getElementById('csvPrev');
+  if(wc===-1){p.innerHTML=`<div style="margin-top:10px;padding:10px;background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--r);font-size:12px;color:var(--red)">No website/domain/url column found.</div>`;return;}
+  p.innerHTML=`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:600;margin-bottom:7px;">Preview — ${csvRows.length} rows</div><div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:var(--surface2)">${csvHeaders.map(h=>`<th style="padding:7px 11px;font-size:10px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);">${esc(h)}</th>`).join('')}</tr></thead><tbody>${csvRows.slice(0,4).map(r=>`<tr>${r.map(c=>`<td style="padding:7px 11px;font-size:11px;border-bottom:1px solid var(--border);">${esc(c)||'<span style="color:var(--text3)">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div style="background:var(--accent-glow);border:1px solid rgba(79,142,247,0.18);border-radius:var(--r);padding:10px 12px;font-size:11px;color:var(--text2);margin-bottom:11px;"><strong style="color:var(--accent)">✦ AI will fill blank enrichment fields</strong> for all ${csvRows.length} rows</div><button class="btn btn-p" onclick="enrichCSV(${wc})">Enrich & Import ${csvRows.length} Rows ✦</button></div>`;
+}
+async function enrichCSV(wc){
+  const total=csvRows.length;let done=0;
+  document.getElementById('csvPrev').innerHTML+=`<div style="margin-top:12px;" id="csvPrg"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;font-weight:600;">Enriching</span><span id="cpt" style="font-size:11px;color:var(--text3)">0 / ${total}</span></div><div class="pbw"><div class="pb" id="cpb" style="width:0%"></div></div><div id="cjl" style="margin-top:9px;max-height:200px;overflow-y:auto;"></div></div>`;
+  const enriched=[];
+  for(let i=0;i<csvRows.length;i++){
+    const row=csvRows[i],w=row[wc];
+    const jl=document.getElementById('cjl');if(jl)jl.innerHTML+=`<div class="jr" id="cj${i}"><span class="js">${esc(w||'(empty)')}</span><span class="badge b-blue" id="cjs${i}">running</span></div>`;
+    let en=Object.fromEntries(csvHeaders.map((h,j)=>[h,row[j]||'']));
+    if(w&&w.trim()){
+      try{
+        const acc=await callAI(w.trim());
+        if(!en['Account Name'])en['Account Name']=acc.accountName;
+        if(!en['DRA Insights'])en['DRA Insights']=acc.draInsights;
+        if(!en['Engineering & IT'])en['Engineering & IT']=acc.engineeringIT;
+        if(!en['DevOps'])en['DevOps']=acc.devOps;
+        if(!en['Employee Count'])en['Employee Count']=acc.employeeCount;
+        if(!en['Account Type By Size'])en['Account Type By Size']=acc.accountTypeBySize;
+        if(!en['Cloud Platform'])en['Cloud Platform']=acc.cloudPlatform;
+        if(!en['Account Type'])en['Account Type']=acc.accountType;
+        if(!en['Account LinkedIn'])en['Account LinkedIn']=acc.accountLinkedIn;
+        if(!en['Business Type'])en['Business Type']=acc.businessType;
+        if(!en['Industry'])en['Industry']=acc.industry;
+        if(!en['Sub-Industry'])en['Sub-Industry']=acc.subIndustry;
+        if(!en['Revenue (USD M)'])en['Revenue (USD M)']=acc.revenueUSD;
+        if(!en['Billing City'])en['Billing City']=acc.billingCity;
+        if(!en['Billing State'])en['Billing State']=acc.billingState;
+        if(!en['Billing Country'])en['Billing Country']=acc.billingCountry;
+        if(!en['Region'])en['Region']=acc.region;
+        if(!en['Time Zone'])en['Time Zone']=acc.timeZone;
+        await saveAccount({accountName:acc.accountName,website:w.trim(),cloudPlatform:acc.cloudPlatform,accountType:acc.accountType,accountTypeReason:acc.accountTypeReason,accountLinkedIn:acc.accountLinkedIn,businessType:acc.businessType,industry:acc.industry,subIndustry:acc.subIndustry,engineeringIT:acc.engineeringIT,devOps:acc.devOps,employeeCount:acc.employeeCount,accountTypeBySize:acc.accountTypeBySize,revenueUSD:acc.revenueUSD,billingCity:acc.billingCity,billingState:acc.billingState,billingCountry:acc.billingCountry,region:acc.region,timeZone:acc.timeZone,id:Date.now()+i});
+        await logEvent('enrich',`CSV row enriched: ${acc.accountName||w}`,{website:w});
+        const s=document.getElementById('cjs'+i);if(s){s.className='badge b-green';s.textContent='done';}
+      }catch(e){const s=document.getElementById('cjs'+i);if(s){s.className='badge b-red';s.textContent='error';}}
+    }
+    enriched.push(en);done++;
+    const t=document.getElementById('cpt');if(t)t.textContent=done+' / '+total;
+    const b=document.getElementById('cpb');if(b)b.style.width=Math.round(done/total*100)+'%';
+    await new Promise(r=>setTimeout(r,380));
+  }
+  const keys=[...new Set(enriched.flatMap(r=>Object.keys(r)))];
+  window._enrichedCSV=[keys.join(','),...enriched.map(r=>keys.map(k=>'"'+(r[k]||'')+'"').join(','))].join('\n');
+  const ep=document.getElementById('csvPrg');if(ep)ep.innerHTML+=`<div style="margin-top:12px;display:flex;gap:7px;"><button class="btn btn-p btn-sm" onclick="dlCSV(window._enrichedCSV,'enriched_accounts.csv')">Download Enriched CSV ↓</button><button class="btn btn-s btn-sm" onclick="showPage('accounts')">View Accounts →</button></div>`;
+  toast('CSV enrichment complete!','success');
+}
+
+// ─────────────────────────────────────────────────
+// TABLES — USER
+// ─────────────────────────────────────────────────
+function renderAccsTable(){filteredAccounts=[...allAccounts];filterAccs();document.getElementById('acBadge').textContent=allAccounts.length;}
+function filterAccs(){
+  const q=(document.getElementById('srch')?.value||'').toLowerCase(),t=(document.getElementById('fType')?.value||'').toLowerCase();
+  filteredAccounts=allAccounts.filter(a=>{const mq=!q||[a.accountName,a.website,a.industry,a.subIndustry,a.businessType].some(f=>f&&f.toLowerCase().includes(q));const mt=!t||(a.accountType||'').toLowerCase().includes(t);return mq&&mt;});
+  const wrap=document.getElementById('accsTbl');
+  if(!filteredAccounts.length){wrap.innerHTML=`<div class="es"><div class="ei">≡</div><div class="et">No accounts found</div></div>`;return;}
+  wrap.innerHTML=`<div class="ts"><table><thead><tr><th style="width:32px"><input type="checkbox" id="selAll" onchange="toggleAll(this)"/></th><th>Account</th><th>Website</th><th>Cloud</th><th>Type</th><th>Business</th><th>Industry</th><th>Sub-Industry</th><th>LinkedIn</th><th></th></tr></thead><tbody>${filteredAccounts.map(a=>`<tr><td><input type="checkbox" class="rc" value="${esc(String(a.id))}" onchange="toggleSel(this)" ${selectedIds.has(String(a.id))?'checked':''}></td><td style="font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.accountName)||'—'}</td><td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${esc(a.website)||'—'}</td><td>${badgeHtml(a.cloudPlatform)}</td><td>${badgeHtml(a.accountType)}</td><td>${badgeHtml(a.businessType)}</td><td style="font-size:11px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.industry)||'—'}</td><td style="font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.subIndustry)||'—'}</td><td>${a.accountLinkedIn?`<a href="${esc(a.accountLinkedIn)}" target="_blank" rel="noopener noreferrer" style="color:var(--teal);font-size:11px;">↗</a>`:'—'}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-g btn-sm" onclick="openDrawer('${esc(String(a.id))}')">View</button><button class="btn btn-d btn-sm" onclick="deleteAccount('${esc(String(a.id))}')">✕</button></div></td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderRecentTbl(){
+  const el=document.getElementById('recentTbl');if(!allAccounts.length){el.innerHTML=`<div class="es"><div class="ei">◈</div><div class="et">No accounts yet</div><div class="esb">Enrich your first account</div></div>`;return;}
+  el.innerHTML=`<table><thead><tr><th>Account</th><th>Website</th><th>Type</th><th>Business</th><th>Industry</th><th>Cloud</th></tr></thead><tbody>${allAccounts.slice(0,8).map(a=>`<tr><td style="font-weight:500">${esc(a.accountName)||'—'}</td><td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${esc(a.website)||'—'}</td><td>${badgeHtml(a.accountType)}</td><td>${badgeHtml(a.businessType)}</td><td style="font-size:11px">${esc(a.industry)||'—'}</td><td>${badgeHtml(a.cloudPlatform)}</td></tr>`).join('')}</tbody></table>`;
+}
+function updateStats(){
+  document.getElementById('s-total').textContent=allAccounts.length;
+  document.getElementById('s-isv').textContent=allAccounts.filter(a=>a.accountType==='ISV').length;
+  document.getElementById('s-ent').textContent=allAccounts.filter(a=>a.accountType==='Enterprise').length;
+  document.getElementById('s-cp').textContent=allAccounts.filter(a=>a.accountType==='Consumer Portal').length;
+  renderRecentTbl();
+}
+function toggleSel(cb){if(cb.checked)selectedIds.add(String(cb.value));else selectedIds.delete(String(cb.value));const n=selectedIds.size;document.getElementById('selCnt').textContent=n?n+' selected':'';document.getElementById('delSelBtn').style.display=n?'inline-flex':'none';}
+function toggleAll(cb){document.querySelectorAll('.rc').forEach(c=>{c.checked=cb.checked;if(cb.checked)selectedIds.add(String(c.value));else selectedIds.delete(String(c.value));});const n=selectedIds.size;document.getElementById('selCnt').textContent=n?n+' selected':'';document.getElementById('delSelBtn').style.display=n?'inline-flex':'none';}
+
+// ─────────────────────────────────────────────────
+// DRAWER — FIX 2 applied, FIX (drawer close after delete)
+// ─────────────────────────────────────────────────
+function openDrawer(id){
+  const acc=allAccounts.find(a=>String(a.id)===String(id));if(!acc)return;
+  document.getElementById('dTitle').textContent=acc.accountName||acc.website;
+  document.getElementById('dBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;">
+      <div style="width:40px;height:40px;border-radius:9px;background:var(--accent-glow);border:1px solid rgba(79,142,247,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--accent);">${esc((acc.accountName||'?')[0])}</div>
+      <div><div style="font-size:14px;font-weight:600;">${esc(acc.accountName)||'—'}</div><div style="font-size:11px;color:var(--text3);font-family:var(--mono);">${esc(acc.website)||'—'}</div></div>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">${badgeHtml(acc.accountType)}${badgeHtml(acc.businessType)}${badgeHtml(acc.accountTypeBySize)}${badgeHtml(acc.cloudPlatform)}</div>
+    ${acc.draInsights?`<div style="background:var(--accent-glow);border:1px solid rgba(79,142,247,0.15);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">${esc(acc.draInsights)}</div>`:''}
+    <div class="dsec">Classification</div>
+    ${[['Account Type',acc.accountType],['Account Type Reason',acc.accountTypeReason],['Account Type By Size',acc.accountTypeBySize],['Business Type',acc.businessType],['Industry',acc.industry],['Sub-Industry',acc.subIndustry]].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${esc(v)||'—'}</div></div>`).join('')}
+    <div class="dsec">Technology</div>
+    ${[['Cloud Platform',acc.cloudPlatform],['Engineering & IT',acc.engineeringIT],['DevOps',acc.devOps]].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv" style="font-size:11px;line-height:1.5;">${esc(v)||'—'}</div></div>`).join('')}
+    <div class="dsec">Company Details</div>
+    ${[['Employee Count',acc.employeeCount],['Revenue (USD M)',acc.revenueUSD]].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${esc(v)||'—'}</div></div>`).join('')}
+    <div class="dsec">Location</div>
+    ${[['City',acc.billingCity],['State / Province',acc.billingState],['Country',acc.billingCountry],['Region',acc.region],['Time Zone',acc.timeZone]].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${esc(v)||'—'}</div></div>`).join('')}
+    <div class="dsec">Links</div>
+    <div class="drow"><div class="dk">LinkedIn</div><div class="dv">${acc.accountLinkedIn?`<a href="${esc(acc.accountLinkedIn)}" target="_blank" rel="noopener noreferrer" style="color:var(--teal)">${esc(acc.accountLinkedIn)}</a>`:'—'}</div></div>
+    <div style="margin-top:16px;"><button class="btn btn-d btn-sm" onclick="deleteAccount('${esc(String(acc.id))}')">Delete Account</button></div>`;
+  document.getElementById('detailDrawer').classList.add('open');
+}
+
+// ─────────────────────────────────────────────────
+// EXPORT
+// ─────────────────────────────────────────────────
+function toCSV(rows){
+  const k=['accountName','website','draInsights','engineeringIT','cloudPlatform','devOps','employeeCount','accountTypeBySize','accountType','accountTypeReason','accountLinkedIn','businessType','industry','subIndustry','revenueUSD','billingCity','billingState','billingCountry','region','timeZone'];
+  const l=['Account Name','Website','DRA Insights','Engineering & IT','Cloud Platform','DevOps','Employee Count','Account Type By Size','Account Type','Account Type Reason','Account LinkedIn','Business Type','Industry','Sub-Industry','Revenue (USD M)','Billing City','Billing State','Billing Country','Region','Time Zone'];
+  return[l.join(','),...rows.map(r=>k.map(x=>'"'+(r[x]||'')+'"').join(','))].join('\n');
+}
+function dlCSV(content,fname){const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(content);a.download=fname;a.click();}
+function exportAll(){dlCSV(toCSV(allAccounts),'my_accounts.csv');toast('Exported '+allAccounts.length+' accounts','success');}
+function exportFiltered(){dlCSV(toCSV(filteredAccounts.length?filteredAccounts:allAccounts),'filtered_accounts.csv');toast('Exported','success');}
+
+// ─────────────────────────────────────────────────
+// ADMIN DATA
+// ─────────────────────────────────────────────────
+async function loadAdminData(){
+  if(!SB||!isAdmin)return;
+  const[{data:users},{data:accs},{data:logs}]=await Promise.all([
+    SB.rpc('get_all_profiles'),SB.rpc('get_all_accounts'),SB.rpc('get_all_logs')
+  ]);
+  allUsers=(users||[]).map(u=>({...u,last_sign_in_at:u.last_sign_in_at||null}));
+  allAdminAccounts=accs||[];allLogs=logs||[];filteredLogs=[...allLogs];filteredAdminAccs=[...allAdminAccounts];
+  document.getElementById('a-users').textContent=allUsers.length;
+  document.getElementById('a-accs').textContent=allAdminAccounts.length;
+  document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
+  document.getElementById('a-logs').textContent=allLogs.length;
+  renderAdminLogs(allLogs.slice(0,8),document.getElementById('recentLogs'));
+  renderUsersTbl();renderAdminAccsTbl();renderLogsPage();renderOverviewStats();
+}
+
+function renderOverviewStats(){
+  const userAccCount={};
+  allAdminAccounts.forEach(a=>{userAccCount[a.user_id]=(userAccCount[a.user_id]||0)+1;});
+  const topU=Object.entries(userAccCount).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([uid,cnt])=>{const u=allUsers.find(x=>x.id===uid);return{email:u?.email||uid.slice(0,8)+'...',cnt};});
+  const tu=document.getElementById('topUsers');
+  tu.innerHTML=topU.length?`<table style="width:100%;border-collapse:collapse;">${topU.map(r=>`<tr><td style="padding:9px 14px;font-size:12px;border-bottom:1px solid rgba(249,115,22,0.07);">${esc(r.email)}</td><td style="padding:9px 14px;text-align:right;border-bottom:1px solid rgba(249,115,22,0.07);"><span class="badge b-admin">${r.cnt}</span></td></tr>`).join('')}</table>`:
+  `<div class="es" style="padding:24px;"><div class="esb">No data yet</div></div>`;
+  const types={};allAdminAccounts.forEach(a=>{const t=a.account_type||'Unknown';types[t]=(types[t]||0)+1;});
+  const tb=document.getElementById('typeBreakdown');const total=allAdminAccounts.length||1;
+  tb.innerHTML=Object.entries(types).sort((a,b)=>b[1]-a[1]).length?`<div style="padding:12px 14px;">${Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span>${esc(t)}</span><span style="color:var(--admin);">${n}</span></div><div class="pbw"><div style="height:5px;background:var(--admin);border-radius:3px;opacity:0.7;width:${Math.round(n/total*100)}%"></div></div></div>`).join('')}</div>`:
+  `<div class="es" style="padding:24px;"><div class="esb">No data</div></div>`;
+}
+
+// ─────────────────────────────────────────────────
+// ADMIN USERS TABLE
+// ─────────────────────────────────────────────────
+function getRoleBadgeClass(role){
+  if(role==='admin')return'role-badge-admin';
+  if(role==='suspended')return'role-badge-suspended';
+  if(role==='banned')return'role-badge-banned';
+  return'role-badge-user';
+}
+function renderUsersTbl(){
+  const q=(document.getElementById('uSrch')?.value||'').toLowerCase();
+  const statusFilter=(document.getElementById('uStatusFilter')?.value||'');
+  let users=allUsers.filter(u=>{
+    const mq=!q||u.email?.toLowerCase().includes(q)||u.full_name?.toLowerCase().includes(q);
+    const ms=!statusFilter||(u.role||'user')===statusFilter;return mq&&ms;
+  });
+  const el=document.getElementById('usersTbl');
+  if(!users.length){el.innerHTML=`<div class="es"><div class="ei">⊙</div><div class="et">No users found</div></div>`;return;}
+  const accCounts={};allAdminAccounts.forEach(a=>{accCounts[a.user_id]=(accCounts[a.user_id]||0)+1;});
+  const selectedUsers=new Set(window._selectedUsers||[]);
+  el.innerHTML=`<div class="ts"><table><thead><tr>
+    <th style="width:32px"><input type="checkbox" id="selAllUsers" onchange="toggleAllUsers(this)"/></th>
+    <th>Name</th><th>Email</th><th>Status</th><th>Accounts</th><th>Joined</th><th>Last Active</th><th>Actions</th>
+  </tr></thead><tbody>${users.map(u=>{
+    const role=u.role||'user';const cnt=accCounts[u.id]||0;
+    const isSuspended=role==='suspended';const isBanned=role==='banned';
+    const rowStyle=isBanned?'opacity:0.5;':isSuspended?'opacity:0.7;':'';
+    return`<tr style="${rowStyle}">
+      <td><input type="checkbox" class="urc" value="${esc(u.id)}" ${selectedUsers.has(u.id)?'checked':''} onchange="toggleUserSel(this)"></td>
+      <td style="font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.full_name)||'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(u.email)||'—'}</td>
+      <td><span class="rb ${getRoleBadgeClass(role)}">${role}</span></td>
+      <td style="text-align:center;"><span class="badge b-gray">${cnt}</span></td>
+      <td style="font-size:11px;color:var(--text3);">${fmtDate(u.created_at).slice(0,12)}</td>
+      <td style="font-size:11px;color:var(--text3);">${u.last_sign_in_at?fmtDate(u.last_sign_in_at).slice(0,12):'—'}</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="btn btn-g btn-sm" onclick="openUserDetail('${esc(u.id)}')">View</button>
+        <button class="btn btn-s btn-sm" onclick="openEditUserModal('${esc(u.id)}')">Edit</button>
+        <button class="btn btn-a btn-sm" onclick="openRoleModal('${esc(u.id)}','${esc(u.email)}','${esc(role)}')">Role</button>
+        ${!isSuspended&&!isBanned?`<button class="btn btn-sm" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);" onclick="suspendUser('${esc(u.id)}','${esc(u.email)}')">Suspend</button>`:''}
+        ${isSuspended?`<button class="btn btn-sm" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);" onclick="reactivateUser('${esc(u.id)}','${esc(u.email)}')">Reactivate</button>`:''}
+        <button class="btn btn-d btn-sm" onclick="openDeleteUserModal('${esc(u.id)}','${esc(u.email)}','${esc(u.full_name||'')}')">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('')}</tbody></table></div>
+  ${selectedUsers.size>0?`<div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+    <span style="font-size:12px;color:var(--text3);">${selectedUsers.size} selected</span>
+    <button class="btn btn-d btn-sm" onclick="bulkDeleteUsers()">Delete Selected</button>
+    <button class="btn btn-sm" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);" onclick="bulkSuspendUsers()">Suspend Selected</button>
+    <button class="btn btn-g btn-sm" onclick="clearUserSelection()">Clear</button>
+  </div>`:''}`;
+}
+function filterUsers(){renderUsersTbl();}
+
+// ─────────────────────────────────────────────────
+// ADMIN ALL ACCOUNTS TABLE
+// ─────────────────────────────────────────────────
+function renderAdminAccsTbl(){
+  const q=(document.getElementById('aaSrch')?.value||'').toLowerCase();
+  filteredAdminAccs=allAdminAccounts.filter(a=>!q||[a.account_name,a.website,a.industry,a.account_type,a.business_type].some(f=>f&&f.toLowerCase().includes(q)));
+  const el=document.getElementById('adminAccsTbl');
+  if(!filteredAdminAccs.length){el.innerHTML=`<div class="es"><div class="ei">≡</div><div class="et">No accounts</div></div>`;return;}
+  const userMap={};allUsers.forEach(u=>{userMap[u.id]=u.email;});
+  el.innerHTML=`<div class="ts"><table><thead><tr><th>Account</th><th>Website</th><th>Type</th><th>Business</th><th>Industry</th><th>Cloud</th><th>Owner</th><th>Date</th><th></th></tr></thead><tbody>${filteredAdminAccs.map(a=>`<tr><td style="font-weight:500;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.account_name)||'—'}</td><td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${esc(a.website)||'—'}</td><td>${badgeHtml(a.account_type)}</td><td>${badgeHtml(a.business_type)}</td><td style="font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.industry)||'—'}</td><td>${badgeHtml(a.cloud_platform)}</td><td style="font-size:11px;color:var(--text3);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(userMap[a.user_id]||a.user_id?.slice(0,8))}</td><td style="font-size:10px;color:var(--text3)">${fmtDate(a.created_at).slice(0,11)}</td><td><button class="btn btn-d btn-sm" onclick="adminDeleteAccount(${a.id})">✕</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+function filterAdminAccs(){renderAdminAccsTbl();}
+async function adminDeleteAccount(id){
+  if(!confirm('Delete this account?'))return;
+  await SB.rpc('admin_delete_account',{acc_id:id});
+  await logEvent('delete',`Admin deleted account ID ${id}`);
+  allAdminAccounts=allAdminAccounts.filter(a=>a.id!==id);filteredAdminAccs=filteredAdminAccs.filter(a=>a.id!==id);
+  renderAdminAccsTbl();renderOverviewStats();document.getElementById('a-accs').textContent=allAdminAccounts.length;
+  toast('Account deleted','success');
+}
+async function adminDeleteUserAccounts(uid,email){
+  if(!confirm(`Delete ALL accounts for ${email}? This cannot be undone.`))return;
+  await SB.rpc('delete_user_accounts',{target_id:uid});
+  await logEvent('delete',`Admin deleted all accounts for user`,{email});
+  allAdminAccounts=allAdminAccounts.filter(a=>a.user_id!==uid);filteredAdminAccs=[...allAdminAccounts];
+  renderAdminAccsTbl();renderUsersTbl();renderOverviewStats();document.getElementById('a-accs').textContent=allAdminAccounts.length;
+  toast('All accounts deleted for '+email,'success');
+}
+function exportAdminCSV(){
+  const k=['account_name','website','dra_insights','engineering_it','cloud_platform','devops','employee_count','account_type_by_size','account_type','account_type_reason','account_linkedin','business_type','industry','sub_industry','revenue_usd','billing_city','billing_state','billing_country','region','time_zone'],l=['Account Name','Website','DRA Insights','Engineering & IT','DevOps','Employee Count','Account Type By Size','Cloud Platform','Account Type','Account LinkedIn','Business Type','Industry','Sub-Industry','Revenue (USD M)','Billing City','Billing State','Billing Country','Region','Time Zone'];
+  const content=[l.join(','),...allAdminAccounts.map(r=>k.map(x=>'"'+(r[x]||'')+'"').join(','))].join('\n');
+  dlCSV(content,'all_accounts_admin.csv');toast('Exported '+allAdminAccounts.length+' accounts','success');
+}
+
+// ─────────────────────────────────────────────────
+// ADMIN ROLE MANAGEMENT
+// ─────────────────────────────────────────────────
+function openRoleModal(uid,email,currentRole){
+  roleTarget={uid,email};
+  document.getElementById('roleMdSub').textContent='Changing role for: '+email;
+  document.getElementById('roleSelect').value=currentRole;
+  document.getElementById('roleModal').classList.add('open');
+}
+async function confirmRoleChange(){
+  if(!roleTarget)return;
+  const newRole=document.getElementById('roleSelect').value;
+  await SB.rpc('update_user_role',{target_id:roleTarget.uid,new_role:newRole});
+  await logEvent('role',`Admin changed role: ${roleTarget.email} → ${newRole}`,{uid:roleTarget.uid,role:newRole});
+  const u=allUsers.find(x=>x.id===roleTarget.uid);if(u)u.role=newRole;
+  document.getElementById('roleModal').classList.remove('open');
+  renderUsersTbl();document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
+  toast(`${roleTarget.email} is now ${newRole}`,'success');roleTarget=null;
+}
+
+// ─────────────────────────────────────────────────
+// ADMIN LOGS
+// ─────────────────────────────────────────────────
+const LOG_ICONS={login:'→',logout:'←',register:'✦',enrich:'◌',delete:'✕',role:'⬡',default:'·'};
+function renderAdminLogs(logs,el){
+  if(!logs.length){el.innerHTML=`<div class="es" style="padding:28px;"><div class="ei">⋮</div><div class="et">No activity</div></div>`;return;}
+  el.innerHTML=logs.map(l=>`<div class="log-row"><div class="log-time">${fmtDate(l.created_at)}</div><div class="log-icon">${LOG_ICONS[l.event_type]||LOG_ICONS.default}</div><div class="log-msg"><span class="log-user">${esc(l.user_email||'system')}</span> — ${esc(l.message||l.event_type)}</div></div>`).join('');
+}
+function renderLogsPage(){filteredLogs=[...allLogs];filterLogs();}
+function filterLogs(){
+  const fv=(document.getElementById('logFilter')?.value||'').toLowerCase();
+  filteredLogs=allLogs.filter(l=>!fv||l.event_type?.toLowerCase().includes(fv));
+  renderAdminLogs(filteredLogs,document.getElementById('logsTbl'));
+}
+async function clearLogs(){
+  if(!confirm('Clear all activity logs?'))return;
+  await SB.rpc('clear_activity_logs');allLogs=[];filteredLogs=[];renderLogsPage();document.getElementById('a-logs').textContent=0;
+  renderAdminLogs([],document.getElementById('recentLogs'));toast('Logs cleared','success');
+}
+
+// ─────────────────────────────────────────────────
+// USER MANAGEMENT — ADMIN
+// ─────────────────────────────────────────────────
+window._selectedUsers=new Set();
+window._deleteTarget=null;
+function toggleUserSel(cb){if(cb.checked)window._selectedUsers.add(cb.value);else window._selectedUsers.delete(cb.value);renderUsersTbl();}
+function toggleAllUsers(cb){document.querySelectorAll('.urc').forEach(c=>{c.checked=cb.checked;if(cb.checked)window._selectedUsers.add(c.value);else window._selectedUsers.delete(c.value);});renderUsersTbl();}
+function clearUserSelection(){window._selectedUsers=new Set();renderUsersTbl();}
+
+async function suspendUser(uid,email){
+  if(!confirm(`Suspend ${email}? They will not be able to log in.`))return;
+  await SB.rpc('update_user_role',{target_id:uid,new_role:'suspended'});
+  await logEvent('role',`Admin suspended user: ${email}`,{uid});
+  const u=allUsers.find(x=>x.id===uid);if(u)u.role='suspended';
+  renderUsersTbl();document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
+  toast(`${email} suspended`,'success');
+}
+async function reactivateUser(uid,email){
+  if(!confirm(`Reactivate ${email}?`))return;
+  await SB.rpc('update_user_role',{target_id:uid,new_role:'user'});
+  await logEvent('role',`Admin reactivated user: ${email}`,{uid});
+  const u=allUsers.find(x=>x.id===uid);if(u)u.role='user';
+  renderUsersTbl();toast(`${email} reactivated`,'success');
+}
+
+function openDeleteUserModal(uid,email,name){
+  window._deleteTarget={uid,email,name};
+  document.getElementById('deleteUserInfo').innerHTML=`
+    <div style="font-weight:500;margin-bottom:4px;">${esc(name||email)}</div>
+    <div style="font-size:12px;color:var(--red);">${esc(email)}</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:6px;">All accounts (${allAdminAccounts.filter(a=>a.user_id===uid).length} records) will also be deleted.</div>`;
+  document.getElementById('deleteConfirmInput').value='';
+  document.getElementById('confirmDeleteBtn').disabled=true;
+  document.getElementById('deleteUserModal').classList.add('open');
+}
+async function confirmDeleteUser(){
+  const t=window._deleteTarget;if(!t)return;
+  const btn=document.getElementById('confirmDeleteBtn');
+  btn.disabled=true;btn.textContent='Deleting...';
+  try{
+    await callAdminUsersAPI({action:'delete',userId:t.uid});
+    await logEvent('delete',`Admin deleted user: ${t.email}`,{uid:t.uid});
+    allUsers=allUsers.filter(u=>u.id!==t.uid);
+    allAdminAccounts=allAdminAccounts.filter(a=>a.user_id!==t.uid);
+    filteredAdminAccs=[...allAdminAccounts];
+    document.getElementById('deleteUserModal').classList.remove('open');
+    document.getElementById('deleteConfirmInput').value='';
+    window._deleteTarget=null;
+    renderUsersTbl();renderAdminAccsTbl();renderOverviewStats();
+    document.getElementById('a-users').textContent=allUsers.length;
+    document.getElementById('a-accs').textContent=allAdminAccounts.length;
+    document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
+    toast(`User ${t.email} deleted permanently`,'success');
+  }catch(e){
+    toast('Delete failed: '+e.message,'error');
+    btn.disabled=false;btn.textContent='Delete Permanently';
+  }
+}
+async function bulkDeleteUsers(){
+  const ids=[...window._selectedUsers];if(!ids.length)return;
+  const emails=ids.map(id=>allUsers.find(u=>u.id===id)?.email||id).join(', ');
+  if(!confirm(`Permanently delete ${ids.length} user(s)?\n${emails}\n\nThis cannot be undone.`))return;
+  for(const uid of ids){
+    await SB.rpc('delete_user_accounts',{target_id:uid});
+    await SB.from('profiles').delete().eq('id',uid);
+  }
+  await logEvent('delete',`Admin bulk deleted ${ids.length} users`);
+  allUsers=allUsers.filter(u=>!ids.includes(u.id));
+  allAdminAccounts=allAdminAccounts.filter(a=>!ids.includes(a.user_id));
+  filteredAdminAccs=[...allAdminAccounts];window._selectedUsers=new Set();
+  renderUsersTbl();renderAdminAccsTbl();renderOverviewStats();
+  document.getElementById('a-users').textContent=allUsers.length;
+  document.getElementById('a-accs').textContent=allAdminAccounts.length;
+  document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
+  toast(`${ids.length} users deleted`,'success');
+}
+async function bulkSuspendUsers(){
+  const ids=[...window._selectedUsers];if(!ids.length)return;
+  if(!confirm(`Suspend ${ids.length} user(s)?`))return;
+  for(const uid of ids){
+    await SB.rpc('update_user_role',{target_id:uid,new_role:'suspended'});
+    const u=allUsers.find(x=>x.id===uid);if(u)u.role='suspended';
+  }
+  await logEvent('role',`Admin bulk suspended ${ids.length} users`);
+  window._selectedUsers=new Set();renderUsersTbl();
+  toast(`${ids.length} users suspended`,'success');
+}
+
+function openUserDetail(uid){
+  const u=allUsers.find(x=>x.id===uid);if(!u)return;
+  const accCount=allAdminAccounts.filter(a=>a.user_id===uid).length;
+  const userAccs=allAdminAccounts.filter(a=>a.user_id===uid).slice(0,5);
+  const logCount=allLogs.filter(l=>l.user_id===uid).length;
+  const lastLog=allLogs.find(l=>l.user_id===uid);
+  document.getElementById('udmTitle').textContent=u.full_name||u.email;
+  document.getElementById('udmEmail').textContent=u.email;
+  document.getElementById('udmBody').innerHTML=`
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;">
+      <span class="rb ${getRoleBadgeClass(u.role||'user')}">${u.role||'user'}</span>
+      <span class="badge b-gray">${accCount} accounts</span>
+      <span class="badge b-gray">${logCount} log entries</span>
+    </div>
+    <div class="di"></div>
+    <div class="dsec">Account Info</div>
+    ${[['User ID',`<span style="font-family:var(--mono);font-size:11px;">${esc(u.id)}</span>`],['Email',esc(u.email)],['Full Name',esc(u.full_name)||'—'],['Role',u.role||'user'],['Joined',fmtDate(u.created_at)],['Last Login',u.last_sign_in_at?fmtDate(u.last_sign_in_at):'—']].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${v||'—'}</div></div>`).join('')}
+    <div class="dsec" style="margin-top:14px;">Recent Accounts (${accCount} total)</div>
+    ${userAccs.length?`<table style="width:100%;border-collapse:collapse;font-size:12px;">${userAccs.map(a=>`<tr><td style="padding:7px 0;border-bottom:1px solid var(--border);font-family:var(--mono);color:var(--accent)">${esc(a.website)||'—'}</td><td style="padding:7px 0;border-bottom:1px solid var(--border);">${esc(a.account_type)||'—'}</td><td style="padding:7px 0;border-bottom:1px solid var(--border);color:var(--text3)">${esc(a.industry)||'—'}</td></tr>`).join('')}</table>${accCount>5?`<div style="font-size:11px;color:var(--text3);margin-top:6px;">+${accCount-5} more accounts</div>`:''}`:
+    '<div style="font-size:12px;color:var(--text3);padding:8px 0;">No accounts yet</div>'}
+    <div class="dsec" style="margin-top:14px;">Last Activity</div>
+    ${lastLog?`<div style="font-size:12px;color:var(--text2);padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text3);">${fmtDate(lastLog.created_at)}</span> — ${esc(lastLog.message||lastLog.event_type)}</div>`:'<div style="font-size:12px;color:var(--text3);padding:8px 0;">No activity logged</div>'}
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;">
+      <button class="btn btn-s btn-sm" onclick="document.getElementById('userDetailModal').classList.remove('open');openEditUserModal('${esc(u.id)}')">Edit User</button>
+      <button class="btn btn-a btn-sm" onclick="openRoleModal('${esc(u.id)}','${esc(u.email)}','${esc(u.role||'user')}');document.getElementById('userDetailModal').classList.remove('open')">Change Role</button>
+      ${u.role!=='suspended'?`<button class="btn btn-sm" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);" onclick="suspendUser('${esc(u.id)}','${esc(u.email)}');document.getElementById('userDetailModal').classList.remove('open')">Suspend User</button>`:''}
+      ${u.role==='suspended'?`<button class="btn btn-sm" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);" onclick="reactivateUser('${esc(u.id)}','${esc(u.email)}');document.getElementById('userDetailModal').classList.remove('open')">Reactivate</button>`:''}
+      <button class="btn btn-d btn-sm" onclick="document.getElementById('userDetailModal').classList.remove('open');openDeleteUserModal('${esc(u.id)}','${esc(u.email)}','${esc(u.full_name||'')}')">Delete User</button>
+    </div>`;
+  document.getElementById('userDetailModal').classList.add('open');
+}
+
+// ─────────────────────────────────────────────────
+// ADD / EDIT USER — ADMIN
+// ─────────────────────────────────────────────────
+function openAddUserModal(){
+  document.getElementById('addUserName').value='';document.getElementById('addUserEmail').value='';
+  document.getElementById('addUserPassword').value='';document.getElementById('addUserRole').value='user';
+  document.getElementById('addUserMsg').innerHTML='';document.getElementById('addUserModal').classList.add('open');
+}
+function closeAddUserModal(){document.getElementById('addUserModal').classList.remove('open');}
+
+async function callAdminUsersAPI(payload){
+  const c=gc();
+  const{data:{session}}=await SB.auth.getSession();
+  if(!session)throw new Error('Session expired. Please sign in again.');
+  const url=c.u.replace(/\/$/,'')+'/functions/v1/admin-users';
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':c.k},body:JSON.stringify(payload)});
+  const result=await r.json();
+  if(!r.ok)throw new Error(result?.error||'Request failed (HTTP '+r.status+')');
+  if(result.error)throw new Error(result.error);
+  return result;
+}
+
+async function submitAddUser(){
+  const name=document.getElementById('addUserName').value.trim();
+  const email=document.getElementById('addUserEmail').value.trim();
+  const password=document.getElementById('addUserPassword').value;
+  const role=document.getElementById('addUserRole').value;
+  const msgEl=document.getElementById('addUserMsg');
+  if(!email||!password){msgEl.innerHTML=`<div class="auth-msg err">Email and password are required.</div>`;return;}
+  if(password.length<8){msgEl.innerHTML=`<div class="auth-msg err">Password must be at least 8 characters.</div>`;return;}
+  const btn=document.getElementById('addUserBtn');btn.disabled=true;btn.textContent='Creating...';msgEl.innerHTML='';
+  try{
+    const result=await callAdminUsersAPI({action:'create',email,password,fullName:name,role});
+    allUsers.unshift(result.user);
+    await logEvent('register',`Admin created user: ${email}`,{email,name,role});
+    closeAddUserModal();renderUsersTbl();
+    document.getElementById('a-users').textContent=allUsers.length;
+    toast(`User ${email} created successfully`,'success');
+  }catch(e){msgEl.innerHTML=`<div class="auth-msg err">${esc(e.message)}</div>`;}
+  btn.disabled=false;btn.textContent='Create User';
+}
+
+window._editTarget=null;
+function openEditUserModal(uid){
+  const u=allUsers.find(x=>x.id===uid);if(!u)return;
+  window._editTarget={...u};
+  document.getElementById('editUserSubtitle').textContent=`Editing: ${u.email}`;
+  document.getElementById('editUserName').value=u.full_name||'';
+  document.getElementById('editUserEmail').value=u.email||'';
+  document.getElementById('editUserPassword').value='';
+  document.getElementById('editUserRole').value=u.role||'user';
+  document.getElementById('editUserMsg').innerHTML='';
+  document.getElementById('editUserModal').classList.add('open');
+}
+function closeEditUserModal(){document.getElementById('editUserModal').classList.remove('open');window._editTarget=null;}
+async function submitEditUser(){
+  const t=window._editTarget;if(!t)return;
+  const name=document.getElementById('editUserName').value.trim();
+  const email=document.getElementById('editUserEmail').value.trim();
+  const password=document.getElementById('editUserPassword').value;
+  const role=document.getElementById('editUserRole').value;
+  const msgEl=document.getElementById('editUserMsg');
+  if(!email){msgEl.innerHTML=`<div class="auth-msg err">Email is required.</div>`;return;}
+  if(password&&password.length<8){msgEl.innerHTML=`<div class="auth-msg err">New password must be at least 8 characters.</div>`;return;}
+  const btn=document.getElementById('editUserBtn');btn.disabled=true;btn.textContent='Saving...';msgEl.innerHTML='';
+  try{
+    const payload={action:'update',userId:t.id,email,fullName:name,role};
+    if(password)payload.password=password;
+    await callAdminUsersAPI(payload);
+    const u=allUsers.find(x=>x.id===t.id);if(u){u.full_name=name;u.email=email;u.role=role;}
+    await logEvent('role',`Admin updated user: ${t.email}`,{uid:t.id,name,role});
+    const changes=[];
+    if(name!==t.full_name)changes.push(`name → ${name}`);
+    if(email!==t.email)changes.push(`email → ${email}`);
+    if(role!==t.role)changes.push(`role → ${role}`);
+    if(password)changes.push('password changed');
+    msgEl.innerHTML=`<div class="auth-msg ok" style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:10px;">✓ Updated: ${esc(changes.length?changes.join(' · '):'No changes')}</div>`;
+    renderUsersTbl();document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
+    setTimeout(()=>closeEditUserModal(),1500);
+    toast(`User ${email} updated`,'success');
+  }catch(e){msgEl.innerHTML=`<div class="auth-msg err">${esc(e.message)}</div>`;}
+  btn.disabled=false;btn.textContent='Save Changes';
+}
+
+function exportUsersCSV(){
+  const accCounts={};allAdminAccounts.forEach(a=>{accCounts[a.user_id]=(accCounts[a.user_id]||0)+1;});
+  const rows=[['Full Name','Email','Role','Accounts','Joined','Last Login'],...allUsers.map(u=>[
+    u.full_name||'',u.email||'',u.role||'user',accCounts[u.id]||0,
+    u.created_at?new Date(u.created_at).toLocaleDateString():'',
+    u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleDateString():''
+  ])];
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  dlCSV(csv,'users_export.csv');toast('Exported '+allUsers.length+' users','success');
+}
+
+// ─────────────────────────────────────────────────
+// NAV
+// ─────────────────────────────────────────────────
+const PM={dashboard:['Dashboard','My enriched accounts'],enrich:['Enrich Account','Single website enrichment'],bulk:['Bulk Enrich','Enrich multiple at once'],upload:['CSV Upload','Upload & enrich a CSV file'],accounts:['All Accounts','Browse & manage my accounts'],export:['Export','Download data as CSV']};
+function showPage(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+id+"'"))b.classList.add('active');});
+  const m=PM[id]||['',''];document.getElementById('pageTitle').textContent=m[0];document.getElementById('pageSub').textContent=m[1];
+  if(id==='accounts')filterAccs();
+}
+const ADMIN_PM={overview:['Overview','System-wide statistics'],users:['Users','Manage all registered users'],'all-accounts':['All Accounts','Every enriched account across users'],logs:['Activity Logs','Full audit trail of all events']};
+function showAdmin(id){
+  document.querySelectorAll('.apg').forEach(p=>p.classList.remove('active'));document.getElementById('apg-'+id).classList.add('active');
+  document.querySelectorAll('.ani').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.ani').forEach(b=>{if(b.getAttribute('onclick')?.includes("'"+id+"'"))b.classList.add('active');});
+  const m=ADMIN_PM[id]||['',''];document.getElementById('adminPageTitle').textContent=m[0];document.getElementById('adminPageSub').textContent=m[1];
+}
+
+// ─────────────────────────────────────────────────
+// SESSION + INIT
+// ─────────────────────────────────────────────────
+async function checkSession(){
+  const c=gc();if(!c.u||!c.k)return;
+  SB=initSB(c.u,c.k);if(!SB)return;
+  const{data}=await SB.auth.getSession();
+  if(data?.session?.user){CU=data.session.user;await enterApp();}
+  SB.auth.onAuthStateChange(async(evt,session)=>{
+    if(evt==='SIGNED_IN'&&session?.user&&!CU){CU=session.user;await enterApp();}
+    if(evt==='SIGNED_OUT')CU=null;
+  });
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('bulkWS').addEventListener('input',function(){const n=this.value.trim().split('\n').filter(l=>l.trim()).length;document.getElementById('bulkCnt').textContent=n+' website'+(n===1?'':'s');});
+  document.getElementById('sWeb').addEventListener('keydown',e=>{if(e.key==='Enter')enrichSingle();});
+  const uz=document.getElementById('uploadZone');
+  uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+  uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+  uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)processCSV(f);});
+  checkSession();
+  initResponsive();
+});
+
+// ─────────────────────────────────────────────────
+// RESPONSIVE
+// ─────────────────────────────────────────────────
+function initResponsive(){
+  document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=768)closeSidebar();}));
+  document.querySelectorAll('.ani').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=768)closeAdminSidebar();}));
+  window.addEventListener('resize',()=>{if(window.innerWidth>768){closeSidebar();closeAdminSidebar();}syncHamburgers();});
+  syncHamburgers();
+}
+function syncHamburgers(){
+  const isMobile=window.innerWidth<=768;
+  const appVisible=document.getElementById('appScreen').style.display!=='none';
+  const adminVisible=document.getElementById('adminScreen').style.display!=='none';
+  const hBtn=document.getElementById('hamburgerBtn');const aBtn=document.getElementById('adminHamburgerBtn');
+  if(hBtn)hBtn.style.display=(isMobile&&appVisible)?'flex':'none';
+  if(aBtn)aBtn.style.display=(isMobile&&adminVisible)?'flex':'none';
+}
+function toggleSidebar(){
+  const sb=document.querySelector('#appScreen .sidebar');const ov=document.getElementById('sidebarOverlay');if(!sb||!ov)return;
+  const open=sb.classList.toggle('mobile-open');ov.classList.toggle('open',open);
+}
+function closeSidebar(){document.querySelector('#appScreen .sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('open');}
+function toggleAdminSidebar(){
+  const sb=document.querySelector('#adminScreen .admin-sidebar');const ov=document.getElementById('adminSidebarOverlay');if(!sb||!ov)return;
+  const open=sb.classList.toggle('mobile-open');ov.classList.toggle('open',open);
+}
+function closeAdminSidebar(){document.querySelector('#adminScreen .admin-sidebar')?.classList.remove('mobile-open');document.getElementById('adminSidebarOverlay')?.classList.remove('open');}
+</script>
+</body>
+</html>
