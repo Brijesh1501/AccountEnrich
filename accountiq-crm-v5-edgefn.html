@@ -903,28 +903,24 @@ async function doRegister(){
   // for ALL new registrations (not just duplicates) — the identity is only populated
   // after the user clicks the confirmation link. Checking profiles first avoids
   // this false-positive entirely.
-  const{data:existing,error:existErr}=await SB.from('profiles').select('id').eq('email',email).maybeSingle();
-  console.log('[Register] profiles pre-check:', {existing, existErr});
+  // Step 1: Pre-check profiles table for duplicate email.
+  // Requires the "profiles_email_exists_check" RLS policy (anon SELECT).
+  // Run once in Supabase SQL Editor:
+  //   CREATE POLICY "profiles_email_exists_check" ON public.profiles
+  //   FOR SELECT TO anon USING (true);
+  const{data:existing}=await SB.from('profiles').select('id').eq('email',email).maybeSingle();
   if(existing){
-    console.log('[Register] BLOCKED by profiles pre-check');
     showMsg('An account with this email already exists. Please sign in instead.');
     btn.disabled=false;btn.textContent='Create Account →';return;
   }
 
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{full_name:name}}});
-  console.log('[Register] signUp result:', {
-    userId: data?.user?.id,
-    email: data?.user?.email,
-    identities: data?.user?.identities,
-    identitiesLen: data?.user?.identities?.length,
-    hasSession: !!data?.session,
-    error
-  });
   if(error){showMsg(error.message);btn.disabled=false;btn.textContent='Create Account →';return;}
 
-  // Duplicate detection: identities:[] + no session = email already in auth.users.
+  // Step 2: Catch orphaned auth.users records (no profile row).
+  // identities:[] + no session = email exists in auth.users but not in profiles.
+  // Fix: Admin panel → Users → 🧹 Cleanup Auth → Delete All Orphans.
   if(data.user&&(data.user.identities?.length===0)&&!data.session){
-    console.log('[Register] BLOCKED by identities check — orphan in auth.users');
     showMsg('An account with this email already exists. Please sign in instead.');
     btn.disabled=false;btn.textContent='Create Account →';return;
   }
