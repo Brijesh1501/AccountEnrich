@@ -228,18 +228,40 @@ serve(async (req: Request) => {
         });
       }
 
+      // Deletion order matters — must remove all FK-referencing rows before
+      // deleting from auth.users, otherwise the auth deletion fails with a
+      // foreign key violation and the email stays permanently blocked in Auth
+      // even though the profile appears gone from the UI.
+      //
+      // Order: activity_logs → accounts → profiles → auth.users
+      //
+      // activity_logs references auth.users(id) without ON DELETE CASCADE,
+      // so it must be deleted first. Even if CASCADE is later added to the DB,
+      // explicit deletion here is safer and works regardless of migration state.
+
+      // 1. Delete activity logs
+      const { error: logErr } = await adminClient
+        .from("activity_logs")
+        .delete()
+        .eq("user_id", userId);
+      if (logErr) console.error("Error deleting activity_logs for user:", logErr);
+
+      // 2. Delete accounts
       const { error: accErr } = await adminClient
         .from("accounts")
         .delete()
         .eq("user_id", userId);
       if (accErr) console.error("Error deleting accounts for user:", accErr);
 
+      // 3. Delete profile
       const { error: profErr } = await adminClient
         .from("profiles")
         .delete()
         .eq("id", userId);
       if (profErr) console.error("Error deleting profile for user:", profErr);
 
+      // 4. Delete from auth.users — this is now safe because all FK references
+      //    have been removed above.
       const { error: delErr } = await adminClient.auth.admin.deleteUser(userId);
       if (delErr) {
         return new Response(JSON.stringify({ error: delErr.message }), {

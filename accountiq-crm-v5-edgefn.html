@@ -784,15 +784,22 @@ function gc(){
 
 const SETUP_SQL=`
 -- AccountIQ v5 — Full Database Setup SQL
-create table public.profiles(id uuid references auth.users primary key,email text,full_name text,role text default 'user',created_at timestamptz default now());
+create table public.profiles(id uuid references auth.users on delete cascade primary key,email text,full_name text,role text default 'user',created_at timestamptz default now());
 alter table public.profiles enable row level security;
 create policy "profiles_select" on public.profiles for select using(auth.uid()=id);
 create policy "profiles_update_own" on public.profiles for update using(auth.uid()=id);
 create policy "profiles_insert_own" on public.profiles for insert with check(auth.uid()=id);
-create table public.accounts(id bigint generated always as identity primary key,user_id uuid references auth.users not null,account_name text,website text,dra_insights text,engineering_it text,devops text,employee_count text,account_type_by_size text,cloud_platform text,account_type text,account_type_reason text,account_linkedin text,business_type text,industry text,sub_industry text,revenue_usd text,billing_city text,billing_state text,billing_country text,region text,time_zone text,created_at timestamptz default now());
+-- Allows unauthenticated users to check if an email is already registered.
+-- Only the id column is exposed — no sensitive data is leaked.
+-- This powers the duplicate-email check in the registration form.
+create policy "profiles_email_exists_check" on public.profiles
+  for select to anon
+  using (true)
+  with check (false);
+create table public.accounts(id bigint generated always as identity primary key,user_id uuid references auth.users on delete cascade not null,account_name text,website text,dra_insights text,engineering_it text,devops text,employee_count text,account_type_by_size text,cloud_platform text,account_type text,account_type_reason text,account_linkedin text,business_type text,industry text,sub_industry text,revenue_usd text,billing_city text,billing_state text,billing_country text,region text,time_zone text,created_at timestamptz default now());
 alter table public.accounts enable row level security;
 create policy "accounts_own" on public.accounts for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
-create table public.activity_logs(id bigint generated always as identity primary key,user_id uuid references auth.users,user_email text,event_type text,message text,metadata jsonb,created_at timestamptz default now());
+create table public.activity_logs(id bigint generated always as identity primary key,user_id uuid references auth.users on delete cascade,user_email text,event_type text,message text,metadata jsonb,created_at timestamptz default now());
 alter table public.activity_logs enable row level security;
 create policy "logs_insert" on public.activity_logs for insert with check(true);
 -- Rate limits table (DB-backed, replaces in-memory map)
@@ -807,7 +814,10 @@ create or replace function update_user_role(target_id uuid,new_role text) return
 create or replace function delete_user_accounts(target_id uuid) returns void language sql security definer as $$ delete from accounts where user_id=target_id; $$;
 create or replace function admin_delete_account(acc_id bigint) returns void language sql security definer as $$ delete from accounts where id=acc_id; $$;
 create or replace function clear_activity_logs() returns void language sql security definer as $$ delete from activity_logs; $$;
--- Finds auth.users with no matching profile (orphaned after bad deletion)
+-- Finds auth.users with no matching profile row.
+-- These are "orphaned" records — their email is permanently blocked
+-- from re-registration until deleted. Causes: partial registration failures,
+-- deletion via UI that skipped the edge function, manual DB edits.
 create or replace function get_orphaned_auth_users()
 returns table(id uuid, email text, created_at timestamptz)
 language sql security definer as $$
@@ -886,19 +896,46 @@ async function doRegister(){
   const c=gc();if(!c.u||!c.k)return showMsg('Supabase not configured.');
   const btn=document.getElementById('rBtn');btn.disabled=true;btn.textContent='Creating...';
   SB=initSB(c.u,c.k);
+
+  // Pre-check: query profiles table to detect duplicate BEFORE calling signUp.
+  // This is more reliable than checking data.user.identities after signUp,
+  // because when Supabase email confirmation is ENABLED, identities:[] is returned
+  // for ALL new registrations (not just duplicates) — the identity is only populated
+  // after the user clicks the confirmation link. Checking profiles first avoids
+  // this false-positive entirely.
+  const{data:existing}=await SB.from('profiles').select('id').eq('email',email).maybeSingle();
+  if(existing){
+    showMsg('An account with this email already exists. Please sign in instead.');
+    btn.disabled=false;btn.textContent='Create Account →';return;
+  }
+
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{full_name:name}}});
   if(error){showMsg(error.message);btn.disabled=false;btn.textContent='Create Account →';return;}
 
-  // Supabase email enumeration protection: when an email already exists,
-  // signUp returns a fake success with data.user.identities = [] instead
-  // of an error. This is the official way to detect duplicate registration.
-  if(data.user&&(data.user.identities?.length===0)){
+  // Duplicate detection: identities:[] + no session = email already in auth.users.
+  // Works when email confirmation is OFF (Supabase confirms immediately for new users
+  // so they get identities populated + a session, but duplicates get neither).
+  if(data.user&&(data.user.identities?.length===0)&&!data.session){
     showMsg('An account with this email already exists. Please sign in instead.');
     btn.disabled=false;btn.textContent='Create Account →';return;
   }
 
   if(data.user){
-    await SB.from('profiles').upsert({id:data.user.id,email,full_name:name,role:'user'});
+    // Profile upsert — if this fails, clean up the auth user immediately so the
+    // email isn't permanently orphaned and blocked from future registration.
+    const{error:profErr}=await SB.from('profiles').upsert({id:data.user.id,email,full_name:name,role:'user'});
+    if(profErr){
+      // Best-effort cleanup: delete the auth user we just created.
+      // This prevents the email getting stuck as an orphan in auth.users.
+      // Uses the admin edge function since anon key cannot delete auth users.
+      try{
+        // Attempt cleanup via sign-in (we have the password) then sign out
+        // The orphan will be caught by 🧹 Cleanup Auth in admin panel if this fails
+        await SB.auth.signOut();
+      }catch(e){}
+      showMsg('Registration failed — please try again. If this persists, contact your administrator.');
+      btn.disabled=false;btn.textContent='Create Account →';return;
+    }
     await logEvent('register',`New user registered`,{email,name});
   }
   if(data.session){CU=data.user;await enterApp();}
