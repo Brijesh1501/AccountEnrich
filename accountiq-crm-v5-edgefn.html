@@ -830,24 +830,17 @@ async function doLogin(){
   const{data,error}=await SB.auth.signInWithPassword({email,password:pw});
   if(error){showMsg(error.message);btn.disabled=false;btn.textContent='Sign In →';return;}
   CU=data.user;
-
-  // Fetch profile role — FAIL CLOSED: if fetch fails or profile missing, deny entry.
-  // This is the primary gate. Supabase Auth ban_duration does not block
-  // signInWithPassword — the role check here is the authoritative block.
-  const{data:profile,error:profErr}=await SB.from('profiles').select('role').eq('id',CU.id).single();
-  if(profErr||!profile){
-    // No profile = account in inconsistent state — deny and sign out
+  // FIX 5: fetch role before entering app
+  const{data:profile}=await SB.from('profiles').select('role').eq('id',CU.id).single();
+  if(profile?.role==='suspended'){
     await SB.auth.signOut();CU=null;
-    showMsg('Account not found. Contact your administrator.');
+    showMsg('Your account has been suspended. Contact your administrator.');
     btn.disabled=false;btn.textContent='Sign In →';return;
   }
-  const blockedRoles=['suspended','banned'];
-  if(blockedRoles.includes(profile.role)){
+  if(profile?.role==='banned'){
     await SB.auth.signOut();CU=null;
-    const msg=profile.role==='suspended'
-      ?'Your account has been suspended. Contact your administrator.'
-      :'Your account has been banned. Contact your administrator.';
-    showMsg(msg);btn.disabled=false;btn.textContent='Sign In →';return;
+    showMsg('Your account has been banned. Contact your administrator.');
+    btn.disabled=false;btn.textContent='Sign In →';return;
   }
   await logEvent('login',`User signed in`,{email});
   await enterApp();
@@ -894,38 +887,20 @@ async function doLogout(){
 // ENTER APP
 // ─────────────────────────────────────────────────
 async function enterApp(){
-  const{data:prof,error:profErr}=await SB.from('profiles').select('*').eq('id',CU.id).single();
+  const{data:prof}=await SB.from('profiles').select('*').eq('id',CU.id).single();
 
-  // FAIL CLOSED: if profile is missing, fetch failed, or role is blocked,
-  // sign the user out immediately before anything renders.
-  // This covers ALL entry paths: doLogin, checkSession, and onAuthStateChange.
-  if(profErr||!prof){
-    // New registration with no profile yet — upsert and continue
-    if(!profErr&&!prof){
-      await SB.from('profiles').upsert({id:CU.id,email:CU.email,full_name:CU.user_metadata?.full_name||'',role:'user'});
-    } else {
-      // Fetch error = unknown state, deny entry
-      await SB.auth.signOut();CU=null;
-      document.getElementById('appScreen').style.display='none';
-      document.getElementById('authScreen').style.display='flex';
-      showMsg('Unable to verify account. Please try again.');
-      return;
-    }
-  }
-
-  // Re-read prof after potential upsert
-  const role=prof?.role||'user';
-  if(role==='suspended'||role==='banned'){
+  // FIX 5b — Second-layer defence for persisted sessions.
+  // Catches users who were suspended/banned after their session was created.
+  if(prof?.role==='suspended'||prof?.role==='banned'){
     await SB.auth.signOut();CU=null;
     document.getElementById('appScreen').style.display='none';
     document.getElementById('authScreen').style.display='flex';
-    showMsg(role==='suspended'
-      ?'Your account has been suspended. Contact your administrator.'
-      :'Your account has been banned. Contact your administrator.');
+    showMsg('Your account access has been revoked. Contact your administrator.');
     return;
   }
 
-  if(role==='admin')isAdmin=true;
+  if(prof&&prof.role==='admin')isAdmin=true;
+  if(!prof){await SB.from('profiles').upsert({id:CU.id,email:CU.email,full_name:CU.user_metadata?.full_name||'',role:'user'});}
   document.getElementById('authScreen').style.display='none';
   document.getElementById('appScreen').style.display='block';
   const email=CU?.email||'';
@@ -1760,13 +1735,10 @@ async function checkSession(){
   const c=gc();if(!c.u||!c.k)return;
   SB=initSB(c.u,c.k);if(!SB)return;
   const{data}=await SB.auth.getSession();
-  // enterApp() is fail-closed — it handles role check for all paths including
-  // persisted sessions (page reload while logged in as suspended user)
   if(data?.session?.user){CU=data.session.user;await enterApp();}
   SB.auth.onAuthStateChange(async(evt,session)=>{
-    // enterApp() handles the role check — no need to duplicate it here
     if(evt==='SIGNED_IN'&&session?.user&&!CU){CU=session.user;await enterApp();}
-    if(evt==='SIGNED_OUT'){CU=null;isAdmin=false;}
+    if(evt==='SIGNED_OUT')CU=null;
   });
 }
 
