@@ -1295,19 +1295,21 @@ function renderSerperCredits(s){
     el.innerHTML=`<div class="credit-row"><span class="credit-label">Status</span><span class="credit-val credit-err">✗ ${esc(s.error)}</span></div>`;
     return;
   }
-  const used=s.creditsUsed??0;
+  // creditsRemaining = "credits" field from Serper API (remaining, not used)
+  const remaining=s.creditsRemaining??0;
   const limit=s.creditsLimit??2500;
-  const remaining=s.creditsRemaining??limit-used;
+  const used=s.creditsUsed??limit-remaining;
   const pct=limit>0?Math.round((remaining/limit)*100):0;
   const barColor=pct>50?'var(--green)':pct>20?'var(--amber)':'var(--red)';
   const valClass=pct>50?'credit-ok':pct>20?'credit-warn':'credit-err';
   el.innerHTML=`
-    <div class="credit-row"><span class="credit-label">Remaining credits</span><span class="credit-val ${valClass}">${remaining.toLocaleString()}</span></div>
-    <div style="margin:4px 0 10px;">
+    <div class="credit-row"><span class="credit-label">Credits remaining</span><span class="credit-val ${valClass}">${remaining.toLocaleString()} / ${limit.toLocaleString()}</span></div>
+    <div style="margin:6px 0 10px;">
       <div class="credit-bar-wrap" style="width:100%"><div class="credit-bar" style="width:${pct}%;background:${barColor}"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;"><span>${used.toLocaleString()} used</span><span>${limit.toLocaleString()} limit</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;"><span>${used.toLocaleString()} used</span><span>${pct}% left</span></div>
     </div>
-    ${s.plan?`<div class="credit-row"><span class="credit-label">Plan</span><span class="credit-val" style="color:rgba(255,255,255,0.6);font-size:11px;">${esc(s.plan)}</span></div>`:''}`;
+    ${s.plan?`<div class="credit-row"><span class="credit-label">Plan</span><span class="credit-val" style="color:rgba(255,255,255,0.6);font-size:11px;">${esc(s.plan)}</span></div>`:''}
+    ${s.email?`<div class="credit-row"><span class="credit-label">Account</span><span class="credit-val" style="color:rgba(255,255,255,0.4);font-size:10px;">${esc(s.email)}</span></div>`:''}`;
 }
 
 function renderGroqCredits(g){
@@ -1322,7 +1324,10 @@ function renderGroqCredits(g){
     el.innerHTML=`<div class="credit-row"><span class="credit-label">Error</span><span class="credit-val credit-err" style="font-size:11px;">${esc(g.error||'Unknown')}</span></div>`;
     return;
   }
-  statusEl.innerHTML=`<span style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:2px 7px;border-radius:20px;font-size:10px;">✓ Connected</span>`;
+  const isRateLimited=g.status==='rate_limited';
+  statusEl.innerHTML=isRateLimited
+    ?`<span style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);padding:2px 7px;border-radius:20px;font-size:10px;">⚠ Rate limited</span>`
+    :`<span style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:2px 7px;border-radius:20px;font-size:10px;">✓ Connected</span>`;
   const reqRemaining=g.requestsRemaining;
   const reqLimit=g.requestLimit;
   const tokRemaining=g.tokensRemaining;
@@ -1331,18 +1336,14 @@ function renderGroqCredits(g){
   const tokPct=tokLimit>0?Math.round((tokRemaining/tokLimit)*100):null;
   const pctBar=(pct,color)=>`<div class="credit-bar-wrap" style="width:100%"><div class="credit-bar" style="width:${pct}%;background:${color}"></div></div>`;
   const barColor=(pct)=>pct>50?'var(--green)':pct>20?'var(--amber)':'var(--red)';
-  const valClass=(pct)=>pct>50?'credit-ok':pct>20?'credit-warn':'credit-err';
+  const valClass=(pct)=>pct!=null?(pct>50?'credit-ok':pct>20?'credit-warn':'credit-err'):'';
   el.innerHTML=`
-    ${reqRemaining!=null?`
-    <div class="credit-row"><span class="credit-label">Requests remaining</span><span class="credit-val ${valClass(reqPct??100)}">${reqRemaining.toLocaleString()}${reqLimit?' / '+reqLimit.toLocaleString():''}</span></div>
-    ${reqPct!=null?pctBar(reqPct,barColor(reqPct)):''}
-    `:''}
-    ${tokRemaining!=null?`
-    <div class="credit-row" style="margin-top:8px;"><span class="credit-label">Tokens remaining</span><span class="credit-val ${valClass(tokPct??100)}">${tokRemaining.toLocaleString()}${tokLimit?' / '+tokLimit.toLocaleString():''}</span></div>
-    ${tokPct!=null?pctBar(tokPct,barColor(tokPct)):''}
-    `:''}
-    ${g.resetsAt?`<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px;">Resets in: ${esc(g.resetsAt)}</div>`:''}
-    ${g.availableModels?.length?`<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;">Models: ${g.availableModels.slice(0,3).map(esc).join(', ')}${g.availableModels.length>3?' +more':''}</div>`:''}`;
+    ${reqRemaining!=null?`<div class="credit-row"><span class="credit-label">Requests remaining</span><span class="credit-val ${valClass(reqPct)}">${reqRemaining.toLocaleString()}${reqLimit?' / '+reqLimit.toLocaleString():''}</span></div>${reqPct!=null?pctBar(reqPct,barColor(reqPct)):''}`:'<div class="credit-row"><span class="credit-label">Requests</span><span class="credit-val" style="color:rgba(255,255,255,0.3);">No data</span></div>'}
+    ${tokRemaining!=null?`<div class="credit-row" style="margin-top:8px;"><span class="credit-label">Tokens remaining</span><span class="credit-val ${valClass(tokPct)}">${tokRemaining.toLocaleString()}${tokLimit?' / '+tokLimit.toLocaleString():''}</span></div>${tokPct!=null?pctBar(tokPct,barColor(tokPct)):''}`:''}
+    <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px;display:flex;flex-direction:column;gap:2px;">
+      ${g.resetsRequestsIn?`<span>Requests reset in: ${esc(g.resetsRequestsIn)}</span>`:''}
+      ${g.resetsTokensIn?`<span>Tokens reset in: ${esc(g.resetsTokensIn)}</span>`:''}
+    </div>`;
 }
 
 function renderOverviewStats(){

@@ -171,15 +171,13 @@ serve(async (req: Request) => {
       if (password && password.length >= 8) authUpdate.password = password;
       if (fullName !== undefined) authUpdate.user_metadata = { full_name: fullName };
 
-      // FIX: Map profile role to Supabase Auth ban state so reactivation
-      // actually allows the user to log in again. Without this, updateUserRole
-      // only changes the profiles table but leaves the Auth user untouched,
-      // so a reactivated user still cannot sign in.
-      if (role === "suspended" || role === "banned") {
-        authUpdate.ban_duration = "876600h"; // ~100 years = effectively permanent
-      } else if (role === "user" || role === "admin") {
-        authUpdate.ban_duration = "none"; // lifts any existing ban
-      }
+      // Map profile role → Supabase Auth ban state.
+      // ban_duration="876600h" blocks new logins (~100 years = permanent).
+      // ban_duration="none" lifts the ban so the user can log in again.
+      const isSuspending = role === "suspended" || role === "banned";
+      const isReactivating = role === "user" || role === "admin";
+      if (isSuspending) authUpdate.ban_duration = "876600h";
+      if (isReactivating) authUpdate.ban_duration = "none";
 
       if (Object.keys(authUpdate).length > 0) {
         const { error: updateErr } = await adminClient.auth.admin.updateUserById(
@@ -192,6 +190,13 @@ serve(async (req: Request) => {
             headers: { ...CORS, "Content-Type": "application/json" },
           });
         }
+      }
+
+      // Kill existing sessions immediately when suspending.
+      // ban_duration blocks NEW logins but live JWT tokens stay valid
+      // until expiry — signOut "global" revokes them right now.
+      if (isSuspending) {
+        await adminClient.auth.admin.signOut(userId, "global");
       }
 
       const profileUpdate: Record<string, unknown> = {};
