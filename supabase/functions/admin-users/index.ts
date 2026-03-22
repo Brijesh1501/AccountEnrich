@@ -171,6 +171,16 @@ serve(async (req: Request) => {
       if (password && password.length >= 8) authUpdate.password = password;
       if (fullName !== undefined) authUpdate.user_metadata = { full_name: fullName };
 
+      // FIX: Map profile role to Supabase Auth ban state so reactivation
+      // actually allows the user to log in again. Without this, updateUserRole
+      // only changes the profiles table but leaves the Auth user untouched,
+      // so a reactivated user still cannot sign in.
+      if (role === "suspended" || role === "banned") {
+        authUpdate.ban_duration = "876600h"; // ~100 years = effectively permanent
+      } else if (role === "user" || role === "admin") {
+        authUpdate.ban_duration = "none"; // lifts any existing ban
+      }
+
       if (Object.keys(authUpdate).length > 0) {
         const { error: updateErr } = await adminClient.auth.admin.updateUserById(
           userId,
