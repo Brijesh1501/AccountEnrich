@@ -628,6 +628,7 @@ input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:po
               </select>
               <button class="btn btn-a btn-sm" onclick="exportUsersCSV()">Export Users ↓</button>
               <button class="btn btn-p btn-sm" onclick="openAddUserModal()">+ Add User</button>
+              <button class="btn btn-sm" style="background:var(--surface2);color:var(--text2);border:1px solid var(--border2);" onclick="openCleanupModal()" title="Delete auth.users records with no matching profile — fixes &quot;user already exists&quot; after manual deletion">🧹 Cleanup Auth</button>
             </div>
           </div>
           <div id="usersTbl"><div class="es"><div class="ei">⊙</div><div class="et">Loading users...</div></div></div>
@@ -721,6 +722,21 @@ input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:po
     <div class="mf"><button class="btn btn-g" onclick="document.getElementById('deleteUserModal').classList.remove('open');document.getElementById('deleteConfirmInput').value='';">Cancel</button><button class="btn btn-d" id="confirmDeleteBtn" disabled onclick="confirmDeleteUser()">Delete Permanently</button></div>
   </div>
 </div>
+<!-- Cleanup Orphaned Auth Users Modal -->
+<div class="mo" id="cleanupModal">
+  <div class="md" style="width:500px;">
+    <h2>🧹 Cleanup Orphaned Auth Records</h2>
+    <p class="md-sub">Finds users in Supabase Auth (auth.users) that have no matching profile row. This happens when a user is deleted without going through the proper delete flow. Cleaning up frees their email for re-registration.</p>
+    <div id="cleanupMsg"></div>
+    <div id="cleanupList" style="margin:12px 0;max-height:220px;overflow-y:auto;"></div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="document.getElementById('cleanupModal').classList.remove('open')">Close</button>
+      <button class="btn btn-s" id="cleanupScanBtn" onclick="scanOrphanedUsers()">Scan for orphans</button>
+      <button class="btn btn-d" id="cleanupDeleteBtn" style="display:none" onclick="deleteOrphanedUsers()">Delete All Orphans</button>
+    </div>
+  </div>
+</div>
+
 <div class="dr" id="detailDrawer">
   <div class="drh"><span style="font-size:13px;font-weight:600;" id="dTitle">Account</span><button class="btn btn-g btn-sm" onclick="document.getElementById('detailDrawer').classList.remove('open')">✕</button></div>
   <div class="drb" id="dBody"></div>
@@ -791,6 +807,16 @@ create or replace function update_user_role(target_id uuid,new_role text) return
 create or replace function delete_user_accounts(target_id uuid) returns void language sql security definer as $$ delete from accounts where user_id=target_id; $$;
 create or replace function admin_delete_account(acc_id bigint) returns void language sql security definer as $$ delete from accounts where id=acc_id; $$;
 create or replace function clear_activity_logs() returns void language sql security definer as $$ delete from activity_logs; $$;
+-- Finds auth.users with no matching profile (orphaned after bad deletion)
+create or replace function get_orphaned_auth_users()
+returns table(id uuid, email text, created_at timestamptz)
+language sql security definer as $$
+  select u.id, u.email, u.created_at
+  from auth.users u
+  left join public.profiles p on p.id = u.id
+  where p.id is null
+  order by u.created_at desc;
+$$;
 `;
 console.log('%c AccountIQ Supabase Setup SQL:','color:#4f8ef7;font-weight:bold;font-size:14px;');
 console.log(SETUP_SQL);
@@ -1590,11 +1616,19 @@ async function bulkDeleteUsers(){
   const ids=[...window._selectedUsers];if(!ids.length)return;
   const emails=ids.map(id=>allUsers.find(u=>u.id===id)?.email||id).join(', ');
   if(!confirm(`Permanently delete ${ids.length} user(s)?\n${emails}\n\nThis cannot be undone.`))return;
+  let failed=0;
   for(const uid of ids){
-    await SB.rpc('delete_user_accounts',{target_id:uid});
-    await SB.from('profiles').delete().eq('id',uid);
+    try{
+      // Must use edge function — it deletes accounts, profile, AND auth.users.
+      // Directly deleting profiles/accounts without removing auth.users leaves
+      // the email permanently reserved in Supabase Auth, blocking re-registration.
+      await callAdminUsersAPI({action:'delete',userId:uid});
+    }catch(e){
+      console.error('Failed to delete user '+uid+':',e);
+      failed++;
+    }
   }
-  await logEvent('delete',`Admin bulk deleted ${ids.length} users`);
+  await logEvent('delete',`Admin bulk deleted ${ids.length-failed} users (${failed} failed)`);
   allUsers=allUsers.filter(u=>!ids.includes(u.id));
   allAdminAccounts=allAdminAccounts.filter(a=>!ids.includes(a.user_id));
   filteredAdminAccs=[...allAdminAccounts];window._selectedUsers=new Set();
@@ -1602,7 +1636,8 @@ async function bulkDeleteUsers(){
   document.getElementById('a-users').textContent=allUsers.length;
   document.getElementById('a-accs').textContent=allAdminAccounts.length;
   document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
-  toast(`${ids.length} users deleted`,'success');
+  if(failed>0)toast(`${failed} user(s) failed to delete fully — check console`,'error');
+  else toast(`${ids.length} users deleted`,'success');
 }
 async function bulkSuspendUsers(){
   const ids=[...window._selectedUsers];if(!ids.length)return;
@@ -1741,6 +1776,112 @@ function exportUsersCSV(){
   ])];
   const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   dlCSV(csv,'users_export.csv');toast('Exported '+allUsers.length+' users','success');
+}
+
+// ─────────────────────────────────────────────────
+// ORPHAN CLEANUP
+// Finds auth.users rows with no matching profiles row.
+// These are left behind when a user is deleted via a
+// path that skipped the edge function (e.g. old bulk delete).
+// Their emails are permanently blocked from re-registration
+// until the auth.users record is also removed.
+//
+// Requires this SQL function in Supabase (run once):
+//
+//   create or replace function get_orphaned_auth_users()
+//   returns table(id uuid, email text, created_at timestamptz)
+//   language sql security definer as $$
+//     select u.id, u.email, u.created_at
+//     from auth.users u
+//     left join public.profiles p on p.id = u.id
+//     where p.id is null
+//     order by u.created_at desc;
+//   $$;
+// ─────────────────────────────────────────────────
+let _orphanedUsers = [];
+
+function openCleanupModal(){
+  _orphanedUsers = [];
+  document.getElementById('cleanupMsg').innerHTML = '';
+  document.getElementById('cleanupList').innerHTML = '<div style="font-size:12px;color:var(--text3);">Click "Scan for orphans" to check for stuck auth records.</div>';
+  document.getElementById('cleanupDeleteBtn').style.display = 'none';
+  document.getElementById('cleanupScanBtn').textContent = 'Scan for orphans';
+  document.getElementById('cleanupScanBtn').disabled = false;
+  document.getElementById('cleanupModal').classList.add('open');
+}
+
+async function scanOrphanedUsers(){
+  const btn = document.getElementById('cleanupScanBtn');
+  btn.disabled = true; btn.textContent = 'Scanning...';
+  document.getElementById('cleanupMsg').innerHTML = '';
+  document.getElementById('cleanupList').innerHTML = '<div style="font-size:12px;color:var(--text3);"><span class="spin">◌</span> Scanning auth records...</div>';
+
+  try{
+    const{data, error} = await SB.rpc('get_orphaned_auth_users');
+    if(error) throw new Error(error.message);
+
+    _orphanedUsers = data || [];
+    const listEl = document.getElementById('cleanupList');
+
+    if(_orphanedUsers.length === 0){
+      listEl.innerHTML = '<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green);">✓ No orphaned auth records found. All emails are clean.</div>';
+      document.getElementById('cleanupDeleteBtn').style.display = 'none';
+    } else {
+      listEl.innerHTML = `
+        <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--amber);margin-bottom:10px;">
+          Found ${_orphanedUsers.length} orphaned record(s). These emails cannot be re-registered until deleted.
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="background:var(--surface2);">
+            <th style="padding:7px 10px;text-align:left;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);">Email</th>
+            <th style="padding:7px 10px;text-align:left;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);">Auth Created</th>
+          </tr></thead>
+          <tbody>${_orphanedUsers.map(u=>`
+            <tr>
+              <td style="padding:7px 10px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;">${esc(u.email||'—')}</td>
+              <td style="padding:7px 10px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text3);">${fmtDate(u.created_at).slice(0,12)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+      document.getElementById('cleanupDeleteBtn').style.display = 'inline-flex';
+    }
+  }catch(e){
+    document.getElementById('cleanupList').innerHTML = `<div style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--red);">
+      ✗ ${esc(e.message)}<br><br>
+      <span style="opacity:0.8;">Make sure you have run the <code>get_orphaned_auth_users()</code> SQL function in Supabase.</span>
+    </div>`;
+  }
+  btn.disabled = false; btn.textContent = 'Scan again';
+}
+
+async function deleteOrphanedUsers(){
+  if(!_orphanedUsers.length) return;
+  const btn = document.getElementById('cleanupDeleteBtn');
+  btn.disabled = true; btn.textContent = 'Deleting...';
+  let deleted = 0, failed = 0;
+
+  for(const u of _orphanedUsers){
+    try{
+      // Use edge function — it handles auth.users deletion with service role
+      await callAdminUsersAPI({action:'delete', userId:u.id});
+      deleted++;
+    }catch(e){
+      console.error('Failed to delete orphan '+u.email+':', e);
+      failed++;
+    }
+  }
+
+  await logEvent('delete', `Admin cleaned up ${deleted} orphaned auth users`);
+  const msgEl = document.getElementById('cleanupMsg');
+  if(failed === 0){
+    msgEl.innerHTML = `<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--green);margin-bottom:10px;">✓ ${deleted} orphaned record(s) deleted. Those emails can now be re-registered.</div>`;
+  } else {
+    msgEl.innerHTML = `<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--amber);margin-bottom:10px;">${deleted} deleted, ${failed} failed. Check console for details.</div>`;
+  }
+  _orphanedUsers = [];
+  document.getElementById('cleanupList').innerHTML = '';
+  document.getElementById('cleanupDeleteBtn').style.display = 'none';
+  btn.disabled = false; btn.textContent = 'Delete All Orphans';
 }
 
 // ─────────────────────────────────────────────────
