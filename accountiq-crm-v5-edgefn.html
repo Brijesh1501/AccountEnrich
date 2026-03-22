@@ -895,7 +895,8 @@ async function doRegister(){
   if(pw.length<8)return showMsg('Password must be at least 8 characters.');
   const c=gc();if(!c.u||!c.k)return showMsg('Supabase not configured.');
   const btn=document.getElementById('rBtn');btn.disabled=true;btn.textContent='Creating...';
-  SB=initSB(c.u,c.k);
+  // Only init SB once — re-creating causes "Multiple GoTrueClient instances" warning
+  if(!SB) SB=initSB(c.u,c.k);
 
   // Pre-check: query profiles table to detect duplicate BEFORE calling signUp.
   // This is more reliable than checking data.user.identities after signUp,
@@ -915,11 +916,28 @@ async function doRegister(){
   }
 
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{full_name:name}}});
-  if(error){showMsg(error.message);btn.disabled=false;btn.textContent='Create Account →';return;}
 
-  // Step 2: Catch orphaned auth.users records (no profile row).
-  // identities:[] + no session = email exists in auth.users but not in profiles.
-  // Fix: Admin panel → Users → 🧹 Cleanup Auth → Delete All Orphans.
+  // Handle all duplicate/existing email cases:
+  // - 422 "User already registered" = email in auth.users (confirmed user)
+  // - identities:[] + no session = orphaned auth.users record (no profile)
+  // - Any other signup error = show as-is
+  if(error){
+    const isDuplicate=
+      error.status===422||
+      (error.message&&(
+        error.message.toLowerCase().includes('already registered')||
+        error.message.toLowerCase().includes('already exists')||
+        error.message.toLowerCase().includes('user already')
+      ));
+    if(isDuplicate){
+      showMsg('An account with this email already exists. Please sign in instead.');
+    } else {
+      showMsg(error.message);
+    }
+    btn.disabled=false;btn.textContent='Create Account →';return;
+  }
+
+  // Secondary check: identities:[] + no session = orphaned auth.users record.
   if(data.user&&(data.user.identities?.length===0)&&!data.session){
     showMsg('An account with this email already exists. Please sign in instead.');
     btn.disabled=false;btn.textContent='Create Account →';return;
