@@ -935,20 +935,21 @@ async function enterApp(){
   // sign the user out immediately before anything renders.
   // This covers ALL entry paths: doLogin, checkSession, and onAuthStateChange.
   if(profErr||!prof){
-    // New registration with no profile yet — upsert and continue
-    if(!profErr&&!prof){
-      await SB.from('profiles').upsert({id:CU.id,email:CU.email,full_name:CU.user_metadata?.full_name||'',role:'user'});
-    } else {
-      // Fetch error = unknown state, deny entry
+    if(profErr){
+      // Fetch error = unknown state — deny entry, fail closed
       await SB.auth.signOut();CU=null;
       document.getElementById('appScreen').style.display='none';
       document.getElementById('authScreen').style.display='flex';
       showMsg('Unable to verify account. Please try again.');
       return;
     }
+    // No profile row yet = brand-new registration confirming email.
+    // Upsert the profile then re-fetch so role is accurate.
+    await SB.from('profiles').upsert({id:CU.id,email:CU.email,full_name:CU.user_metadata?.full_name||'',role:'user'});
+    const{data:freshProf}=await SB.from('profiles').select('*').eq('id',CU.id).single();
+    if(freshProf) Object.assign(prof={},freshProf);
   }
 
-  // Re-read prof after potential upsert
   const role=prof?.role||'user';
   if(role==='suspended'||role==='banned'){
     await SB.auth.signOut();CU=null;
