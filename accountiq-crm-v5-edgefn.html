@@ -234,6 +234,17 @@ input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:po
 .admin-sb-foot{padding:10px 10px;border-top:1px solid rgba(249,115,22,0.1);}
 .back-btn{width:100%;display:flex;align-items:center;gap:7px;padding:7px 10px;background:rgba(249,115,22,0.07);border:1px solid var(--admin-border);border-radius:7px;color:var(--admin);font-size:12px;cursor:pointer;font-family:var(--font);margin-bottom:5px;transition:all 0.12s;}
 .back-btn:hover{background:rgba(249,115,22,0.13);}
+.credit-card{background:#0c0e13;border:1px solid rgba(249,115,22,0.12);border-radius:var(--rl);padding:16px;margin-bottom:18px;}
+.credit-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(249,115,22,0.07);}
+.credit-row:last-child{border-bottom:none;}
+.credit-label{font-size:11px;color:rgba(255,255,255,0.45);}
+.credit-val{font-size:13px;font-weight:600;font-family:var(--mono);}
+.credit-bar-wrap{background:rgba(255,255,255,0.07);border-radius:4px;height:5px;width:120px;overflow:hidden;margin-top:4px;}
+.credit-bar{height:100%;border-radius:4px;transition:width 0.4s;}
+.credit-ok{color:var(--green);}
+.credit-warn{color:var(--amber);}
+.credit-err{color:var(--red);}
+.credit-spin{animation:spin 0.8s linear infinite;display:inline-block;color:rgba(249,115,22,0.5);}
 .role-badge-admin{background:var(--admin-bg);color:var(--admin);border:1px solid var(--admin-border);}
 .role-badge-user{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(79,142,247,0.2);}
 .role-badge-suspended{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
@@ -426,7 +437,7 @@ input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:po
       </div>
     </nav>
     <div class="sb-user">
-      <button class="cfg-btn" onclick="openConfig()">⚙ Connection Settings</button>
+      <button class="cfg-btn" id="cfgBtn" onclick="openConfig()" style="display:none">⚙ Connection Settings</button>
       <div class="uc">
         <div class="ua" id="userAvatar">?</div>
         <div class="ui"><div class="ue" id="userEmail">—</div><div class="ur" id="userRoleLabel">User</div></div>
@@ -586,6 +597,23 @@ input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:po
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;">
           <div class="atw"><div class="ath"><span style="font-size:12px;font-weight:600;color:var(--admin);">Top Users by Accounts</span></div><div id="topUsers"><div class="es" style="padding:24px;"><div class="esb">Loading...</div></div></div></div>
           <div class="atw"><div class="ath"><span style="font-size:12px;font-weight:600;color:var(--admin);">Account Type Breakdown</span></div><div id="typeBreakdown"><div class="es" style="padding:24px;"><div class="esb">Loading...</div></div></div></div>
+        </div>
+        <!-- API Credits Panel -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;">
+          <div class="credit-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span style="font-size:12px;font-weight:600;color:var(--admin);">Serper Credits</span>
+              <button class="btn btn-a btn-sm" onclick="loadCredits()" style="font-size:10px;padding:3px 8px;">↻ Refresh</button>
+            </div>
+            <div id="serperCredits"><div style="font-size:11px;color:rgba(255,255,255,0.3);"><span class="credit-spin">◌</span> Loading...</div></div>
+          </div>
+          <div class="credit-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span style="font-size:12px;font-weight:600;color:var(--admin);">Groq API</span>
+              <span id="groqStatus" style="font-size:10px;"></span>
+            </div>
+            <div id="groqCredits"><div style="font-size:11px;color:rgba(255,255,255,0.3);"><span class="credit-spin">◌</span> Loading...</div></div>
+          </div>
         </div>
       </div>
       <!-- ADMIN USERS -->
@@ -882,6 +910,7 @@ async function enterApp(){
     document.getElementById('userRoleLabel').textContent='Administrator';
     document.getElementById('userAvatar').classList.add('admin-ua');
     document.getElementById('adminNavSection').style.display='block';
+    document.getElementById('cfgBtn').style.display='flex'; // only admins see connection settings
   }
   setDB(true);
   await loadAccounts();
@@ -1223,6 +1252,97 @@ async function loadAdminData(){
   document.getElementById('a-logs').textContent=allLogs.length;
   renderAdminLogs(allLogs.slice(0,8),document.getElementById('recentLogs'));
   renderUsersTbl();renderAdminAccsTbl();renderLogsPage();renderOverviewStats();
+  loadCredits(); // fetch API credits live
+}
+
+// ── API Credits ───────────────────────────────────
+async function loadCredits(){
+  // Reset to loading state
+  document.getElementById('serperCredits').innerHTML=`<div style="font-size:11px;color:rgba(255,255,255,0.3);"><span class="credit-spin">◌</span> Fetching...</div>`;
+  document.getElementById('groqCredits').innerHTML=`<div style="font-size:11px;color:rgba(255,255,255,0.3);"><span class="credit-spin">◌</span> Fetching...</div>`;
+  document.getElementById('groqStatus').innerHTML='';
+
+  try{
+    const c=gc();
+    const{data:{session}}=await SB.auth.getSession();
+    if(!session)throw new Error('No session');
+    const url=c.u.replace(/\/$/,'')+'/functions/v1/credits';
+    const res=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':c.k},
+      body:JSON.stringify({})
+    });
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err?.error||'HTTP '+res.status);
+    }
+    const{serper,groq}=await res.json();
+    renderSerperCredits(serper);
+    renderGroqCredits(groq);
+  }catch(e){
+    document.getElementById('serperCredits').innerHTML=`<div style="font-size:11px;color:var(--red);">✗ ${esc(e.message)}</div>`;
+    document.getElementById('groqCredits').innerHTML=`<div style="font-size:11px;color:var(--red);">✗ ${esc(e.message)}</div>`;
+  }
+}
+
+function renderSerperCredits(s){
+  const el=document.getElementById('serperCredits');
+  if(!s?.configured){
+    el.innerHTML=`<div class="credit-row"><span class="credit-label">Status</span><span class="credit-val credit-err">Not configured</span></div><div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;">Set SERPER_API_KEY in Supabase secrets</div>`;
+    return;
+  }
+  if(s.error){
+    el.innerHTML=`<div class="credit-row"><span class="credit-label">Status</span><span class="credit-val credit-err">✗ ${esc(s.error)}</span></div>`;
+    return;
+  }
+  const used=s.creditsUsed??0;
+  const limit=s.creditsLimit??2500;
+  const remaining=s.creditsRemaining??limit-used;
+  const pct=limit>0?Math.round((remaining/limit)*100):0;
+  const barColor=pct>50?'var(--green)':pct>20?'var(--amber)':'var(--red)';
+  const valClass=pct>50?'credit-ok':pct>20?'credit-warn':'credit-err';
+  el.innerHTML=`
+    <div class="credit-row"><span class="credit-label">Remaining credits</span><span class="credit-val ${valClass}">${remaining.toLocaleString()}</span></div>
+    <div style="margin:4px 0 10px;">
+      <div class="credit-bar-wrap" style="width:100%"><div class="credit-bar" style="width:${pct}%;background:${barColor}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;"><span>${used.toLocaleString()} used</span><span>${limit.toLocaleString()} limit</span></div>
+    </div>
+    ${s.plan?`<div class="credit-row"><span class="credit-label">Plan</span><span class="credit-val" style="color:rgba(255,255,255,0.6);font-size:11px;">${esc(s.plan)}</span></div>`:''}`;
+}
+
+function renderGroqCredits(g){
+  const el=document.getElementById('groqCredits');
+  const statusEl=document.getElementById('groqStatus');
+  if(!g?.configured){
+    el.innerHTML=`<div class="credit-row"><span class="credit-label">Status</span><span class="credit-val credit-err">Not configured</span></div><div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;">Set GROQ_API_KEY in Supabase secrets</div>`;
+    return;
+  }
+  if(g.status==='error'){
+    statusEl.innerHTML=`<span style="background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:2px 7px;border-radius:20px;font-size:10px;">✗ Error</span>`;
+    el.innerHTML=`<div class="credit-row"><span class="credit-label">Error</span><span class="credit-val credit-err" style="font-size:11px;">${esc(g.error||'Unknown')}</span></div>`;
+    return;
+  }
+  statusEl.innerHTML=`<span style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:2px 7px;border-radius:20px;font-size:10px;">✓ Connected</span>`;
+  const reqRemaining=g.requestsRemaining;
+  const reqLimit=g.requestLimit;
+  const tokRemaining=g.tokensRemaining;
+  const tokLimit=g.tokenLimit;
+  const reqPct=reqLimit>0?Math.round((reqRemaining/reqLimit)*100):null;
+  const tokPct=tokLimit>0?Math.round((tokRemaining/tokLimit)*100):null;
+  const pctBar=(pct,color)=>`<div class="credit-bar-wrap" style="width:100%"><div class="credit-bar" style="width:${pct}%;background:${color}"></div></div>`;
+  const barColor=(pct)=>pct>50?'var(--green)':pct>20?'var(--amber)':'var(--red)';
+  const valClass=(pct)=>pct>50?'credit-ok':pct>20?'credit-warn':'credit-err';
+  el.innerHTML=`
+    ${reqRemaining!=null?`
+    <div class="credit-row"><span class="credit-label">Requests remaining</span><span class="credit-val ${valClass(reqPct??100)}">${reqRemaining.toLocaleString()}${reqLimit?' / '+reqLimit.toLocaleString():''}</span></div>
+    ${reqPct!=null?pctBar(reqPct,barColor(reqPct)):''}
+    `:''}
+    ${tokRemaining!=null?`
+    <div class="credit-row" style="margin-top:8px;"><span class="credit-label">Tokens remaining</span><span class="credit-val ${valClass(tokPct??100)}">${tokRemaining.toLocaleString()}${tokLimit?' / '+tokLimit.toLocaleString():''}</span></div>
+    ${tokPct!=null?pctBar(tokPct,barColor(tokPct)):''}
+    `:''}
+    ${g.resetsAt?`<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px;">Resets in: ${esc(g.resetsAt)}</div>`:''}
+    ${g.availableModels?.length?`<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;">Models: ${g.availableModels.slice(0,3).map(esc).join(', ')}${g.availableModels.length>3?' +more':''}</div>`:''}`;
 }
 
 function renderOverviewStats(){
@@ -1377,7 +1497,10 @@ function clearUserSelection(){window._selectedUsers=new Set();renderUsersTbl();}
 
 async function suspendUser(uid,email){
   if(!confirm(`Suspend ${email}? They will not be able to log in.`))return;
+  // Update profile role AND call admin-users edge function to ban at Supabase Auth level.
+  // Without the Auth-level ban, the user's existing session still works.
   await SB.rpc('update_user_role',{target_id:uid,new_role:'suspended'});
+  try{await callAdminUsersAPI({action:'update',userId:uid,role:'suspended'});}catch(e){console.warn('Auth-level suspend failed:',e);}
   await logEvent('role',`Admin suspended user: ${email}`,{uid});
   const u=allUsers.find(x=>x.id===uid);if(u)u.role='suspended';
   renderUsersTbl();document.getElementById('a-admins').textContent=allUsers.filter(u=>u.role==='admin').length;
@@ -1385,10 +1508,14 @@ async function suspendUser(uid,email){
 }
 async function reactivateUser(uid,email){
   if(!confirm(`Reactivate ${email}?`))return;
+  // FIX: Must set role back to 'user' at BOTH the profiles table level AND
+  // Supabase Auth level. Previously only profiles was updated, leaving the
+  // Auth user in a banned state — so login still failed after reactivation.
   await SB.rpc('update_user_role',{target_id:uid,new_role:'user'});
+  try{await callAdminUsersAPI({action:'update',userId:uid,role:'user'});}catch(e){console.warn('Auth-level reactivation failed:',e);}
   await logEvent('role',`Admin reactivated user: ${email}`,{uid});
   const u=allUsers.find(x=>x.id===uid);if(u)u.role='user';
-  renderUsersTbl();toast(`${email} reactivated`,'success');
+  renderUsersTbl();toast(`${email} reactivated — they can now log in`,'success');
 }
 
 function openDeleteUserModal(uid,email,name){
